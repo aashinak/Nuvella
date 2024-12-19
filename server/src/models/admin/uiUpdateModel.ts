@@ -2,15 +2,17 @@ import mongoose, { Schema } from "mongoose";
 import IUiUpdate from "../../entities/admin/IUiUpdate";
 
 // Create the UiUpdate schema
-const uiUpdateSchema: Schema = new Schema<IUiUpdate>(
+const uiUpdateSchema: Schema = new Schema(
   {
-    adminId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Admin",
-      required: true,
-    },
-    heroImage: { type: [String], required: true },
-    heroText: { type: [String], required: true },
+    uiUpdates: [
+      {
+        id: { type: String, required: true },
+        heroImage: { type: String, required: true },
+        heroText: { type: String, required: true },
+        subText1: { type: String, required: true },
+        subText2: { type: String, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );
