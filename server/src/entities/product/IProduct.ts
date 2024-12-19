@@ -6,6 +6,6 @@ export default interface IProduct {
   price: string;
   categoryId: string;
   stock: number;
-  sizes: { size: string; stock: number }[];
+  sizes?: { size: string; stock: number }[];
   discountId: string;
 }

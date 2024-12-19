@@ -1,10 +1,11 @@
-import { ObjectId } from "mongoose"
+import { ObjectId } from "mongoose";
 
 export default interface IUiUpdate {
-    _id?: string 
-  adminId: string | ObjectId
-  heroImage: string[]
-  heroText: string[]
-  createdAt?: Date;
-  updatedAt?: Date;
+  uiUpdates: {
+    id: string;
+    heroImage: string;
+    heroText: string;
+    subText1: string;
+    subText2: string;
+  }[];
 }
