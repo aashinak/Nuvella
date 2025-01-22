@@ -1,6 +1,6 @@
-import productCategoryRepository from "../../../repository/product/productCategoryRepository";
-import ApiError from "../../../utils/apiError";
-import logger from "../../../utils/logger";
+import productCategoryRepository from "../../../../repository/product/productCategoryRepository";
+import ApiError from "../../../../utils/apiError";
+import logger from "../../../../utils/logger";
 
 const deleteCategory = async (categoryId: string) => {
   const existingCategory =

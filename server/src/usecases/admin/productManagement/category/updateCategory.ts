@@ -1,8 +1,8 @@
-import adminRepository from "../../../repository/admin/adminRepository";
-import productCategoryRepository from "../../../repository/product/productCategoryRepository";
-import ApiError from "../../../utils/apiError";
-import cleanUpAvatar from "../../../utils/avatarCleanup";
-import uploadToCloudinary from "../../../utils/cloudinary";
+import adminRepository from "../../../../repository/admin/adminRepository";
+import productCategoryRepository from "../../../../repository/product/productCategoryRepository";
+import ApiError from "../../../../utils/apiError";
+import cleanUpAvatar from "../../../../utils/avatarCleanup";
+import uploadToCloudinary from "../../../../utils/cloudinary";
 
 interface productCategoryData {
   name?: string;

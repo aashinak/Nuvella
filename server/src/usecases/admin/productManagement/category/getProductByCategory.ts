@@ -1,5 +1,5 @@
-import productRepository from "../../../repository/product/productRepository";
-import ApiError from "../../../utils/apiError";
+import productRepository from "../../../../repository/product/productRepository";
+import ApiError from "../../../../utils/apiError";
 
 const getProductByCategory = async (categoryId: string) => {
   const categories = await productRepository.findProductsByCategory(categoryId);

@@ -1,22 +1,15 @@
-import adminRepository from "../../../repository/admin/adminRepository";
-import productCategoryRepository from "../../../repository/product/productCategoryRepository";
-import ApiError from "../../../utils/apiError";
-import cleanUpAvatar from "../../../utils/avatarCleanup";
-import uploadToCloudinary from "../../../utils/cloudinary";
+import adminRepository from "../../../../repository/admin/adminRepository";
+import productCategoryRepository from "../../../../repository/product/productCategoryRepository";
+import ApiError from "../../../../utils/apiError";
+import cleanUpAvatar from "../../../../utils/avatarCleanup";
+import uploadToCloudinary from "../../../../utils/cloudinary";
 
 interface categoryData {
   name: string;
   categoryImageLocalPath: string;
-  adminId: string;
 }
 
 const createCategory = async (data: categoryData) => {
-  // check if admin exists
-  const admin = await adminRepository.findById(data.adminId);
-  if (!admin || !admin.isVerified) {
-    await cleanUpAvatar(data.categoryImageLocalPath);
-    throw new ApiError(400, "Invalid admin");
-  }
   // check if categoryName already exists
   const isCategoryExists =
     await productCategoryRepository.getProductCategoryByName(data.name);

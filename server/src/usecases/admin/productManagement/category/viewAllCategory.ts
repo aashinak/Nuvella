@@ -1,4 +1,4 @@
-import productCategoryRepository from "../../../repository/product/productCategoryRepository";
+import productCategoryRepository from "../../../../repository/product/productCategoryRepository";
 
 const viewAllCategory = async () => {
   const categoryList =
