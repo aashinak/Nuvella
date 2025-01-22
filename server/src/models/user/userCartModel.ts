@@ -6,10 +6,20 @@ type UserCartDocument = IUserCart & Document;
 
 const UserCartSchema: Schema = new Schema(
   {
+    userId: {
+      type: Schema.Types.ObjectId, // ObjectId to reference the user
+      required: true,
+      ref: "User", // Reference to the `User` model
+    },
     productId: {
-      type: [Schema.Types.ObjectId], // Array of ObjectIds to represent product references
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "Product", // Reference to the `Product` model
+    },
+    size: {
+      type: String,
+      required: true,
+      enum: ["S", "M", "L", "XL", "2XL"],
     },
   },
   {

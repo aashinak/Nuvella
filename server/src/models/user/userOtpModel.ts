@@ -16,7 +16,7 @@ const userOtpSchema: Schema = new Schema<IUserOtp>(
     otpReason: {
       type: String,
       required: true,
-      enum: ["USER_LOGIN", "PASSWORD_RESET"], // OTP reasons
+      enum: ["USER_REGISTRATION","USER_LOGIN", "PASSWORD_RESET"], // OTP reasons
     },
     // Timestamp for OTP creation with default as now
     otpCreatedAt: { type: Date, required: true, default: Date.now },

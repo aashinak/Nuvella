@@ -42,12 +42,11 @@ const UserSchema: Schema = new Schema(
     },
     phone: {
       type: String,
-      required: true,
-      unique: true,
       match: [/^\+?[1-9]\d{1,14}$/, "Please provide a valid phone number"],
     },
     isVerified: {
       type: Boolean,
+      required: true,
       default: false,
     },
     googleId: {

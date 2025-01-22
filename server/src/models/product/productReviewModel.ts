@@ -28,7 +28,6 @@ const ProductReviewSchema: Schema = new Schema(
     ],
     review: {
       type: String,
-      required: true,
       trim: true,
     },
     rating: {

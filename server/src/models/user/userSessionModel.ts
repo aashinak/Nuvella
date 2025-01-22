@@ -8,6 +8,7 @@ const userSessionSchema: Schema = new Schema<IUserSession>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true,
     },
     refreshToken: {
       type: String,
