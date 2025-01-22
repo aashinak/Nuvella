@@ -5,7 +5,7 @@ import User from "../../models/user/userModel";
 
 class UserRepository {
   // Create a user
-  async createUser(userData: IUser): Promise<IUser> {
+  async createUser(userData: Partial<IUser>): Promise<IUser> {
     try {
       const user = new User(userData);
       return await user.save();
@@ -26,6 +26,20 @@ class UserRepository {
       throw new ApiError(
         500,
         "Internal Server Error while finding user by email",
+        [error.message]
+      );
+    }
+  }
+
+  // Find user by username
+  async findUserByUserName(userName: string): Promise<IUser | null> {
+    try {
+      return await User.findOne({ username: userName });
+    } catch (error: any) {
+      logger.error(`Error finding user by username: ${userName}`, error);
+      throw new ApiError(
+        500,
+        "Internal Server Error while finding user by username",
         [error.message]
       );
     }

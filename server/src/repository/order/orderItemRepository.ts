@@ -8,45 +8,49 @@ class OrderItemRepository {
    * Create a new order item
    * @param itemData Order item data
    */
-  async createOrderItem(
-    itemData: IOrderItem
-  ): Promise<IOrderItem> {
+  async createOrderItem(itemData: IOrderItem): Promise<IOrderItem> {
     try {
       const orderItem = new OrderItem(itemData);
       return await orderItem.save();
     } catch (error: any) {
       logger.error("Error creating order item: ", error);
-      throw new ApiError(500, "Failed to create order item", [
-        error.message,
-      ]);
+      throw new ApiError(500, "Failed to create order item", [error.message]);
     }
   }
 
   /**
-   * Get all order items
+   * Create multiple order items in bulk
+   * @param itemsData Array of order item data
    */
-  async getAllOrderItems(): Promise<IOrderItem[]> {
+  async createOrderItems(itemsData: IOrderItem[]): Promise<IOrderItem[]> {
     try {
-      return await OrderItem.find();
+      return await OrderItem.insertMany(itemsData);
     } catch (error: any) {
-      logger.error("Error fetching all order items: ", error);
-      throw new ApiError(500, "Failed to fetch order items", [
-        error.message,
-      ]);
+      logger.error("Error creating multiple order items: ", error);
+      throw new ApiError(500, "Failed to create order items", [error.message]);
     }
   }
 
   /**
    * Get an order item by its ID
    */
-  async getOrderItemById(
-    id: string
-  ): Promise<IOrderItem | null> {
+  async getOrderItemById(id: string): Promise<IOrderItem | null> {
     try {
       return await OrderItem.findById(id);
     } catch (error: any) {
       logger.error(`Error fetching order item by ID: ${id}`, error);
       throw new ApiError(500, "Failed to fetch order item by ID", [
+        error.message,
+      ]);
+    }
+  }
+
+  async getOrderItemsByIds(ids: string[]): Promise<IOrderItem[]> {
+    try {
+      return await OrderItem.find({ _id: { $in: ids } });
+    } catch (error: any) {
+      logger.error("Error fetching order items by IDs: ", error);
+      throw new ApiError(500, "Failed to fetch order items by IDs", [
         error.message,
       ]);
     }
@@ -65,25 +69,19 @@ class OrderItemRepository {
       });
     } catch (error: any) {
       logger.error(`Error updating order item by ID: ${id}`, error);
-      throw new ApiError(500, "Failed to update order item", [
-        error.message,
-      ]);
+      throw new ApiError(500, "Failed to update order item", [error.message]);
     }
   }
 
   /**
    * Delete an order item by ID
    */
-  async deleteOrderItem(
-    id: string
-  ): Promise<IOrderItem | null> {
+  async deleteOrderItem(id: string): Promise<IOrderItem | null> {
     try {
       return await OrderItem.findByIdAndDelete(id);
     } catch (error: any) {
       logger.error(`Error deleting order item by ID: ${id}`, error);
-      throw new ApiError(500, "Failed to delete order item", [
-        error.message,
-      ]);
+      throw new ApiError(500, "Failed to delete order item", [error.message]);
     }
   }
 }
