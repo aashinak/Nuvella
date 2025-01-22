@@ -2,13 +2,15 @@ class ApiError extends Error {
     statusCode: number;
     data: any;
     success: boolean;
-    errors: string[];
+    errors?: string[];
+    additionalInfo?: Record<string, any>;
     stack?: string;
 
     constructor(
         statusCode: number,
         message: string = "Something went wrong",
         errors: string[] = [],
+        additionalInfo: Record<string, any> = {},
         stack: string = ""
     ) {
         super(message);
@@ -16,7 +18,17 @@ class ApiError extends Error {
         this.data = null;
         this.message = message;
         this.success = false;
-        this.errors = errors;
+
+        // Conditionally set errors only if non-empty
+        if (errors.length > 0) {
+            this.errors = errors;
+        }
+
+        // Add additionalInfo if provided
+        if (Object.keys(additionalInfo).length > 0) {
+            this.additionalInfo = additionalInfo;
+        }
+        
 
         // Conditionally set the stack
         if (stack) {
@@ -27,4 +39,4 @@ class ApiError extends Error {
     }
 }
 
-export default ApiError
+export default ApiError;
