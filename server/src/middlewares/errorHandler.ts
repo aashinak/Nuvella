@@ -5,6 +5,7 @@ import logger from "../utils/logger";
 interface ApiError extends Error {
     statusCode?: number;
     errors?: string[]; // Optional field for validation or specific error messages
+    additionalInfo?: Record<string, any>; // Optional field for extra information
 }
 
 const errorHandler = (
@@ -18,16 +19,24 @@ const errorHandler = (
     const message = isInternalError ? "Internal Server Error" : err.message;
 
     // Log the error for debugging purposes
-    if (statusCode === 500)
+    if (statusCode === 500) {
         logger.error(
             `Status: ${statusCode} - Message: ${err.message}`,
-            err.errors
+            {
+                errors: err.errors,
+                additionalInfo: err.additionalInfo,
+                stack: err.stack,
+            }
         );
-    else
+    } else {
         logger.warn(
             `Status: ${statusCode} - Message: ${err.message}`,
-            err.errors
+            {
+                errors: err.errors,
+                additionalInfo: err.additionalInfo,
+            }
         );
+    }
 
     // Send error response
     res.status(statusCode).json({
@@ -35,7 +44,8 @@ const errorHandler = (
         status: "error",
         statusCode,
         message,
-        ...(err.errors && { errors: err.errors }), // Include additional error details if available
+        ...(err.errors && { errors: err.errors }), // Include specific error details if available
+        ...(err.additionalInfo && { additionalInfo: err.additionalInfo }), // Include additional info if provided
     });
 };
 
