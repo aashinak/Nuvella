@@ -2,12 +2,14 @@ export default interface IUser {
   _id?: string;
   username: string;
   avatar?: string;
-  password: string;
+  password?: string;
   firstname: string;
-  lastname: string;
+  lastname?: string;
   email: string;
-  phone: string;
+  phone?: string;
   isVerified: boolean;
-  googleId: string;
+  googleId?: string;
   provider: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

@@ -3,6 +3,6 @@ export default interface IOrder {
   customerId: string;
   orderItems: string[];
   address: string;
-  status: string;
-  paymentId: string;
+  status?: string;
+  paymentId?: string;
 }

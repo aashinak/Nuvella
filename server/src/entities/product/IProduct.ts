@@ -1,3 +1,5 @@
+import IProductDiscount from "./IProductDiscount";
+
 export default interface IProduct {
   _id?: string;
   name: string;
@@ -7,5 +9,5 @@ export default interface IProduct {
   categoryId: string;
   stock: number;
   sizes?: { size: string; stock: number }[];
-  discountId: string;
+  discountId: IProductDiscount | string;
 }
