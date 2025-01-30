@@ -12,7 +12,7 @@ const getAllCartItems = async (userId: string) => {
 
   // Cache the cart data with a TTL
   if (cart) {
-    await redisClient.setex(`cart:${userId}`, 3600, JSON.stringify(cart));
+    await redisClient.setex(`cart:${userId}`, 300, JSON.stringify(cart));
   }
 
   return { message: "Cart fetched successfully", cart };
