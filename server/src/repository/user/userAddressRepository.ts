@@ -19,7 +19,10 @@ class UserAddressRepository {
 
   async getAddressesByUserId(userId: string): Promise<IUserAddress[]> {
     try {
-      const addresses = await UserAddress.find({ userId });
+      const addresses = await UserAddress.find(
+        { userId },
+        { userId: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+      );
       return addresses;
     } catch (error: any) {
       logger.error(
@@ -29,13 +32,17 @@ class UserAddressRepository {
     }
   }
 
-  async updateAddressById(
+  async updateAddressByIds(
+    userId: string,
     addressId: string,
     updates: Partial<IUserAddress>
   ): Promise<IUserAddress | null> {
     try {
-      const updatedAddress = await UserAddress.findByIdAndUpdate(
-        addressId,
+      const updatedAddress = await UserAddress.findOneAndUpdate(
+        {
+          _id: addressId,
+          userId: userId,
+        },
         updates,
         { new: true, runValidators: true }
       );
@@ -49,9 +56,12 @@ class UserAddressRepository {
     }
   }
 
-  async deleteAddressById(addressId: string): Promise<boolean> {
+  async deleteAddressById(addressId: string, userId: string): Promise<boolean> {
     try {
-      const result = await UserAddress.findByIdAndDelete(addressId);
+      const result = await UserAddress.findOneAndDelete({
+        _id: addressId,
+        userId: userId,
+      });
       return result !== null;
     } catch (error: any) {
       logger.error(

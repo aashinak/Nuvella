@@ -65,7 +65,7 @@ class OrderRepository {
     try {
       return await Order.find({ customerId })
         .populate("orderItems")
-        .populate("customerId");
+        .populate("address");
     } catch (error: any) {
       logger.error("Error fetching all orders: ", error);
       throw new ApiError(500, "Failed to fetch orders", [error.message]);
