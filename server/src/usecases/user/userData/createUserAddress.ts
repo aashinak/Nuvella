@@ -8,8 +8,8 @@ const createUserAddress = async (data: IUserAddress) => {
   if (!user) throw new ApiError(400, "Invalid request");
   const newUserAddress = await userAddressRepository.createAddress(data);
   if (!newUserAddress) {
-    return { message: "Address didnt added" };
+    throw new ApiError(500, "Address didnt added");
   }
-  return { message: "Added new address" };
+  return { message: "Added new address", address: newUserAddress };
 };
 export default createUserAddress;
