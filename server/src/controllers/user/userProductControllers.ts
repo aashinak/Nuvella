@@ -14,6 +14,9 @@ import initiatePayment from "../../usecases/user/product/initiatePayment";
 import createOrderItems from "../../usecases/user/product/createOrderItems";
 import createOrder from "../../usecases/user/product/createOrder";
 import getCheckoutItemsByIds from "../../usecases/user/product/getCheckoutItemsById";
+import getOrdersByUserId from "../../usecases/user/product/getOrdersByUserId";
+import clearCart from "../../usecases/user/product/clearCart";
+import removeItemsFromCart from "../../usecases/user/product/removeItemsFromCart";
 
 export const getCategoriesController = async (
   req: Request,
@@ -132,6 +135,42 @@ export const getAllCartItemController = async (
   });
 };
 
+export const clearCartItemController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const userId = req.userId;
+
+  const response = await clearCart(userId as string);
+
+  // Send response
+  res.status(200).json({
+    message: response.message,
+    success: true,
+  });
+};
+
+export const removeCartItemController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const userId = req.userId;
+
+  const response = await removeItemsFromCart(
+    userId as string,
+    req.params.cartId
+  );
+
+  // Send response
+  res.status(200).json({
+    message: response.message,
+    cart: response.cart,
+    success: true,
+  });
+};
+
 export const searchProductsByIdsController = async (
   req: Request,
   res: Response,
@@ -223,6 +262,23 @@ export const getCheckoutItemsByIdsController = async (
   res.status(200).json({
     message: products.message,
     data: products.data,
+    success: true,
+  });
+};
+
+export const getOrderItemsByUserIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const userId = req.params.userId;
+
+  const orderData = await getOrdersByUserId(userId);
+
+  // Send response
+  res.status(200).json({
+    message: orderData.message,
+    orders: orderData.orders,
     success: true,
   });
 };
