@@ -11,7 +11,7 @@ class tokenService {
   async generateAccessToken(
     id: string,
     role: roles = "USER",
-    expiry: string = "15m"
+    expiry: string = "10m"
   ): Promise<string> {
     return await jwt.sign({ id, role }, ACCESS_TOKEN_SECRET, {
       expiresIn: expiry,
