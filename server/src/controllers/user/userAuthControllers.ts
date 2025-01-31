@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import validationErrorHandler from "../../utils/validationErrorHandler";
-import userRegistration from "../../usecases/user/auth/userRegistration";
-import userLogin from "../../usecases/user/auth/userLogin";
-import userRegistrationOtpVerification from "../../usecases/user/auth/userRegistrationOtpVerification";
-import userLogout from "../../usecases/user/auth/userLogout";
-import userTokenRegeneration from "../../usecases/user/auth/userTokenRegeneration";
+import userLogin from "../../usecases/user/auth/login/userLogin";
+import userRegistration from "../../usecases/user/auth/register/userRegistration";
+import userRegistrationOtpVerification from "../../usecases/user/auth/register/userRegistrationOtpVerification";
+import userLogout from "../../usecases/user/auth/login/userLogout";
+import userTokenRegeneration from "../../usecases/user/auth/token/userTokenRegeneration";
 
 export const userRegisterController = async (
   req: Request,

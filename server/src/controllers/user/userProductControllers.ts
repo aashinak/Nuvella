@@ -7,17 +7,18 @@ import getProductByCategory from "../../usecases/user/product/getProductByCatego
 import ApiError from "../../utils/apiError";
 import searchProductNames from "../../usecases/user/product/searchProductNames";
 import getProductById from "../../usecases/user/product/getProductById";
-import addToCart from "../../usecases/user/product/addToCart";
-import getAllCartItems from "../../usecases/user/product/getAllCartItems";
+import addToCart from "../../usecases/user/cart/addToCart";
+import getAllCartItems from "../../usecases/user/cart/getAllCartItems";
 import searchProductsByIds from "../../usecases/user/product/searchProductsByIds";
-import initiatePayment from "../../usecases/user/product/initiatePayment";
-import createOrderItems from "../../usecases/user/product/createOrderItems";
-import createOrder from "../../usecases/user/product/createOrder";
+import initiatePayment from "../../usecases/user/order/initiatePayment";
+import createOrderItems from "../../usecases/user/order/createOrderItems";
+import createOrder from "../../usecases/user/order/createOrder";
 import getCheckoutItemsByIds from "../../usecases/user/product/getCheckoutItemsById";
-import getOrdersByUserId from "../../usecases/user/product/getOrdersByUserId";
-import clearCart from "../../usecases/user/product/clearCart";
-import removeItemsFromCart from "../../usecases/user/product/removeItemsFromCart";
-import getOrderById from "../../usecases/user/product/getOrderById";
+import getOrdersByUserId from "../../usecases/user/order/getOrdersByUserId";
+import clearCart from "../../usecases/user/cart/clearCart";
+import removeItemsFromCart from "../../usecases/user/cart/removeItemsFromCart";
+import getOrderById from "../../usecases/user/order/getOrderById";
+import cancelOrder from "../../usecases/user/order/cancelOrder";
 
 export const getCategoriesController = async (
   req: Request,
@@ -245,6 +246,22 @@ export const createOrderController = async (
       success: true,
     });
   }
+};
+
+export const cancelOrderController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const { orderId } = req.params;
+  const userId = req.userId;
+  const order = await cancelOrder(orderId, userId as string);
+
+  res.status(200).json({
+    message: order.message,
+    refundId: order.refundId,
+    success: true,
+  });
 };
 
 export const getCheckoutItemsByIdsController = async (
