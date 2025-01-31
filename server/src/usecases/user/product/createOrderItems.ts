@@ -55,7 +55,7 @@ const createOrderItems = async (data: IOrderItem[]) => {
     totalAmount += itemTotal;
   });
 
-  console.log(totalAmount);
+
   let order;
   try {
     const options = {
