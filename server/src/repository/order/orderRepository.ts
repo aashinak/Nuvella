@@ -151,6 +151,7 @@ class OrderRepository {
             status: { $first: "$status" },
             paymentId: { $first: "$paymentId" },
             totalAmount: { $first: "$totalAmount" },
+            refundId: { $first: "$refundId" },
             createdAt: { $first: "$createdAt" },
             updatedAt: { $first: "$updatedAt" },
           },
@@ -207,6 +208,15 @@ class OrderRepository {
     } catch (error: any) {
       logger.error(`Error deleting order by ID: ${id}`, error);
       throw new ApiError(500, "Failed to delete order", [error.message]);
+    }
+  }
+
+  async getOrderById(id: string, userId: string): Promise<IOrder | null> {
+    try {
+      return await Order.findOne({ _id: id, customerId: userId });
+    } catch (error: any) {
+      logger.error(`Error fetching order by ID: ${id}`, error);
+      throw new ApiError(500, "Failed to fetch order", [error.message]);
     }
   }
 }
