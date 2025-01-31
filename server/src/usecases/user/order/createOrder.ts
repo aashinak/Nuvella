@@ -37,8 +37,9 @@ const createOrder = async (data: createOrderData) => {
       status: "Processing",
       paymentId: data.razorpay_payment_id,
     });
-    const cacheKey = `orders:${data.customerId}`;
-    await redisClient.del(cacheKey);
+    const cacheKey1 = `orders:${data.customerId}`;
+    const cacheKey2 = `cart:${data.customerId}`;
+    await Promise.all([redisClient.del(cacheKey1), redisClient.del(cacheKey2)]);
     return { message: "Order placed successfully", order };
   }
   return { message: "Order couldnt placed" };

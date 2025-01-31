@@ -1,10 +1,9 @@
-import adminRepository from "../../../repository/admin/adminRepository";
-import userRepository from "../../../repository/user/userRepository";
-import userSessionRepository from "../../../repository/user/userSessionRepository";
-import ApiError from "../../../utils/apiError";
-import logger from "../../../utils/logger";
-import sanitizeData from "../../../utils/sanitizeDataInput";
-import tokenService from "../../../utils/tokenService";
+import userRepository from "../../../../repository/user/userRepository";
+import userSessionRepository from "../../../../repository/user/userSessionRepository";
+import ApiError from "../../../../utils/apiError";
+import logger from "../../../../utils/logger";
+import sanitizeData from "../../../../utils/sanitizeDataInput";
+import tokenService from "../../../../utils/tokenService";
 
 const userTokenRegeneration = async (oldRefreshToken: string) => {
   let decodedToken;

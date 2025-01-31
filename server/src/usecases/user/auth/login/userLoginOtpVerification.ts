@@ -1,12 +1,12 @@
-import redisClient from "../../../config/redis/redis-client";
-import userOtpRepository from "../../../repository/user/userOtpRepository";
-import userRepository from "../../../repository/user/userRepository";
-import userSessionRepository from "../../../repository/user/userSessionRepository";
-import ApiError from "../../../utils/apiError";
-import hashOtp from "../../../utils/hashOtp";
-import logger from "../../../utils/logger";
-import sanitizeData from "../../../utils/sanitizeDataInput";
-import tokenService from "../../../utils/tokenService";
+import redisClient from "../../../../config/redis/redis-client";
+import userOtpRepository from "../../../../repository/user/userOtpRepository";
+import userRepository from "../../../../repository/user/userRepository";
+import userSessionRepository from "../../../../repository/user/userSessionRepository";
+import ApiError from "../../../../utils/apiError";
+import hashOtp from "../../../../utils/hashOtp";
+import logger from "../../../../utils/logger";
+import sanitizeData from "../../../../utils/sanitizeDataInput";
+import tokenService from "../../../../utils/tokenService";
 
 const userLoginOtpVerification = async (otp: number, userId: string) => {
   const user = await userRepository.findUserById(userId);

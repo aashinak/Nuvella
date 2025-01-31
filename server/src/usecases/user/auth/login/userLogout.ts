@@ -1,7 +1,7 @@
-import userSessionRepository from "../../../repository/user/userSessionRepository";
-import ApiError from "../../../utils/apiError";
-import logger from "../../../utils/logger";
-import tokenService from "../../../utils/tokenService";
+import userSessionRepository from "../../../../repository/user/userSessionRepository";
+import ApiError from "../../../../utils/apiError";
+import logger from "../../../../utils/logger";
+import tokenService from "../../../../utils/tokenService";
 
 async function userLogout(refreshToken: string) {
   // Verify the provided refresh token

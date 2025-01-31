@@ -1,17 +1,17 @@
-import redisClient from "../../../config/redis/redis-client";
-import IUser from "../../../entities/user/IUser";
-import userOtpRepository from "../../../repository/user/userOtpRepository";
-import userRepository from "../../../repository/user/userRepository";
-import ApiError from "../../../utils/apiError";
-import cleanUpAvatar from "../../../utils/avatarCleanup";
-import uploadToCloudinary from "../../../utils/cloudinary";
-import sendMail from "../../../utils/emailService";
-import generateOtp from "../../../utils/generateOtp";
-import hashOtp from "../../../utils/hashOtp";
-import hashService from "../../../utils/hashService";
-import logger from "../../../utils/logger";
-import emailFormat from "../../../utils/otpEmailFormat";
-import sanitizeData from '../../../utils/sanitizeDataInput'
+import redisClient from "../../../../config/redis/redis-client";
+import IUser from "../../../../entities/user/IUser";
+import userOtpRepository from "../../../../repository/user/userOtpRepository";
+import userRepository from "../../../../repository/user/userRepository";
+import ApiError from "../../../../utils/apiError";
+import cleanUpAvatar from "../../../../utils/avatarCleanup";
+import uploadToCloudinary from "../../../../utils/cloudinary";
+import sendMail from "../../../../utils/emailService";
+import generateOtp from "../../../../utils/generateOtp";
+import hashOtp from "../../../../utils/hashOtp";
+import hashService from "../../../../utils/hashService";
+import logger from "../../../../utils/logger";
+import emailFormat from "../../../../utils/otpEmailFormat";
+import sanitizeData from '../../../../utils/sanitizeDataInput'
 
 const userRegistration = async (userData: Partial<IUser>) => {
   let { email, avatar, username, password, lastname, firstname, phone } =

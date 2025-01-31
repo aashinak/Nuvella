@@ -1,9 +1,9 @@
-import redisClient from "../../../config/redis/redis-client";
-import userOtpRepository from "../../../repository/user/userOtpRepository";
-import userRepository from "../../../repository/user/userRepository";
-import ApiError from "../../../utils/apiError";
-import hashOtp from "../../../utils/hashOtp";
-import logger from "../../../utils/logger";
+import redisClient from "../../../../config/redis/redis-client";
+import userOtpRepository from "../../../../repository/user/userOtpRepository";
+import userRepository from "../../../../repository/user/userRepository";
+import ApiError from "../../../../utils/apiError";
+import hashOtp from "../../../../utils/hashOtp";
+import logger from "../../../../utils/logger";
 
 const userRegistrationOtpVerification = async (otp: number, userId: string) => {
   const user = await userRepository.findUserById(userId);

@@ -1,11 +1,11 @@
-import redisClient from "../../../config/redis/redis-client";
-import userOtpRepository from "../../../repository/user/userOtpRepository";
-import userRepository from "../../../repository/user/userRepository";
-import userSessionRepository from "../../../repository/user/userSessionRepository";
-import ApiError from "../../../utils/apiError";
-import hashOtp from "../../../utils/hashOtp";
-import hashService from "../../../utils/hashService";
-import logger from "../../../utils/logger";
+import redisClient from "../../../../config/redis/redis-client";
+import userOtpRepository from "../../../../repository/user/userOtpRepository";
+import userRepository from "../../../../repository/user/userRepository";
+import userSessionRepository from "../../../../repository/user/userSessionRepository";
+import ApiError from "../../../../utils/apiError";
+import hashOtp from "../../../../utils/hashOtp";
+import hashService from "../../../../utils/hashService";
+import logger from "../../../../utils/logger";
 
 async function userForgotPasswordRequestVerification(
   otp: number,

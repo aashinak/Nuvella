@@ -1,12 +1,12 @@
-import redisClient from "../../../config/redis/redis-client";
-import userOtpRepository from "../../../repository/user/userOtpRepository";
-import userRepository from "../../../repository/user/userRepository";
-import ApiError from "../../../utils/apiError";
-import sendMail from "../../../utils/emailService";
-import generateOtp from "../../../utils/generateOtp";
-import hashOtp from "../../../utils/hashOtp";
-import logger from "../../../utils/logger";
-import emailFormat from "../../../utils/otpEmailFormat";
+import redisClient from "../../../../config/redis/redis-client";
+import userOtpRepository from "../../../../repository/user/userOtpRepository";
+import userRepository from "../../../../repository/user/userRepository";
+import ApiError from "../../../../utils/apiError";
+import sendMail from "../../../../utils/emailService";
+import generateOtp from "../../../../utils/generateOtp";
+import hashOtp from "../../../../utils/hashOtp";
+import logger from "../../../../utils/logger";
+import emailFormat from "../../../../utils/otpEmailFormat";
 
 async function userForgotPasswordRequest(email: string) {
   // Step 1: Check if the user exists
