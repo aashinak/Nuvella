@@ -8,4 +8,5 @@ export default interface IOrder {
   paymentId?: string;
   totalAmount: number;
   paymentMethod: string;
+  refundId?: string;
 }
