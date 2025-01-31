@@ -15,6 +15,7 @@ import { userRegOtpValidationRules } from "../../validators/user/userRegOtpVerif
 import { getBannersController } from "../../controllers/user/userUiContentsControllers";
 import {
   addToCartController,
+  cancelOrderController,
   clearCartItemController,
   createOrderController,
   createOrderItemsController,
@@ -143,13 +144,22 @@ router.post(
 router.post(
   "/createOrderItems",
   createRateLimiter({ max: 20 }),
+  isUserAuthenticated,
   asyncHandler(createOrderItemsController)
 );
 
 router.post(
   "/createOrder",
   createRateLimiter({ max: 20 }),
+  isUserAuthenticated,
   asyncHandler(createOrderController)
+);
+
+router.put(
+  "/cancelOrder/:orderId",
+  createRateLimiter({ max: 20 }),
+  isUserAuthenticated,
+  asyncHandler(cancelOrderController)
 );
 
 router.get(
