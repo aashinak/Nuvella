@@ -47,6 +47,9 @@ const OrderSchema: Schema = new Schema(
       type: Number,
       required: true,
     },
+    refundId: {
+      type: String,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
