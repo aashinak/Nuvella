@@ -17,6 +17,7 @@ import getCheckoutItemsByIds from "../../usecases/user/product/getCheckoutItemsB
 import getOrdersByUserId from "../../usecases/user/product/getOrdersByUserId";
 import clearCart from "../../usecases/user/product/clearCart";
 import removeItemsFromCart from "../../usecases/user/product/removeItemsFromCart";
+import getOrderById from "../../usecases/user/product/getOrderById";
 
 export const getCategoriesController = async (
   req: Request,
@@ -271,14 +272,31 @@ export const getOrderItemsByUserIdController = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const userId = req.params.userId;
+  const userId = req.userId;
 
-  const orderData = await getOrdersByUserId(userId);
+  const orderData = await getOrdersByUserId(userId as string);
 
   // Send response
   res.status(200).json({
     message: orderData.message,
     orders: orderData.orders,
+    success: true,
+  });
+};
+
+export const getOrderByIdController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const userId = req.userId;
+
+  const orderData = await getOrderById(req.params.orderId, userId as string);
+
+  // Send response
+  res.status(200).json({
+    message: orderData.message,
+    orders: orderData.order,
     success: true,
   });
 };

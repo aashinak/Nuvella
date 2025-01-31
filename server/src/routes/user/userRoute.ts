@@ -21,6 +21,7 @@ import {
   getAllCartItemController,
   getCategoriesController,
   getCheckoutItemsByIdsController,
+  getOrderByIdController,
   getOrderItemsByUserIdController,
   getProductByCategoryController,
   getProductByIdController,
@@ -216,9 +217,17 @@ router.post(
 ///////////////////////////////////////////////
 
 router.get(
-  "/getOrders/:userId",
+  "/getOrders",
   createRateLimiter({ max: 60 }),
+  isUserAuthenticated,
   asyncHandler(getOrderItemsByUserIdController)
+);
+
+router.get(
+  "/getOrder/:orderId",
+  createRateLimiter({ max: 60 }),
+  isUserAuthenticated,
+  asyncHandler(getOrderByIdController)
 );
 
 ////////////////////product statistic
