@@ -5,9 +5,9 @@
 /dist/
 /build/
 
-/log
 
 # Logs
+/logs
 *.log
 *.log.*
 

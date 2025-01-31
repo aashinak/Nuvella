@@ -7,6 +7,15 @@ type OrderDocument = IOrder & Document;
 // Define the Order schema
 const OrderSchema: Schema = new Schema(
   {
+    orderId: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+    },
     customerId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -32,6 +41,10 @@ const OrderSchema: Schema = new Schema(
     },
     paymentId: {
       type: String,
+      required: true,
+    },
+    totalAmount: {
+      type: Number,
       required: true,
     },
   },
