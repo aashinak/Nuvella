@@ -7,8 +7,8 @@ services:
     restart: always
     ports:
       - "9000:9000"
-    environment:
-      - NODE_ENV=production
+    env_file:
+      - /home/ubuntu/.env
     depends_on:
       - redis
     networks:
