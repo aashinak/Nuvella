@@ -12,7 +12,7 @@ router.use("/user", userRoute);
 router.use("/admin", adminRoute);
 
 router.get("/ping", async (req, res) => {
-  res.json({ message: "Pong!!" });
+  res.json({ message: "Pong!!!" });
 });
 
 export default router;
