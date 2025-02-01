@@ -224,7 +224,7 @@ function Navbar() {
                 )}
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 mt-4">
+            <DropdownMenuContent align="end" className="w-40 mt-4 z-100">
               <DropdownMenuItem className="border font-bold antialiased">
                 Hey {userData?.username} 👋
               </DropdownMenuItem>
