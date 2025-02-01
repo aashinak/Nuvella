@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'server/**'
 
 jobs:
   build-and-push:
@@ -21,5 +23,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t aashinak/nuvellaserver:latest .
+          docker build -t aashinak/nuvellaserver:latest ./server
           docker push aashinak/nuvellaserver:latest
