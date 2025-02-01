@@ -184,6 +184,83 @@ class OrderRepository {
     return order;
   }
 
+  async findMostSoldProducts(): Promise<IOrder[] | null> {
+    try {
+      const products = await Order.aggregate([
+        {
+          $unwind: {
+            path: "$orderItems",
+          },
+        },
+        {
+          $lookup: {
+            from: "orderitems",
+            localField: "orderItems",
+            foreignField: "_id",
+            as: "orderItems",
+          },
+        },
+        {
+          $unwind: {
+            path: "$orderItems",
+          },
+        },
+        {
+          $group: {
+            _id: "$orderItems.product",
+            totalSold: {
+              $sum: "$orderItems.quantity",
+            },
+          },
+        },
+        {
+          $sort: {
+            totalSold: -1,
+          },
+        },
+        {
+          $limit: 8,
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "_id",
+            foreignField: "_id",
+            as: "product",
+          },
+        },
+        {
+          $unwind: {
+            path: "$product",
+          },
+        },
+        {
+          $lookup: {
+            from: "productdiscounts",
+            localField: "product.discountId",
+            foreignField: "_id",
+            as: "product.discountDetails",
+          },
+        },
+        {
+          $addFields: {
+            "product.discountDetails": {
+              $arrayElemAt: ["$product.discountDetails", 0],
+            },
+          },
+        },
+        {
+          $replaceRoot: { newRoot: "$product" }, // Makes "product" the top-level document
+        },
+      ]);
+      
+      return products || null;
+    } catch (error: any) {
+      logger.error(`Error fetching products`);
+      throw new ApiError(500, "Failed to fetch products", [error.message]);
+    }
+  }
+
   /**
    * Update an order by its ID
    */
