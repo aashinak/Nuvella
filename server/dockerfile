@@ -33,4 +33,4 @@ RUN npm install --only=production && npm cache clean --force
 EXPOSE 9000
 
 # Command to start the server (assuming entry point is in dist/server.js)
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/server.js"] 
