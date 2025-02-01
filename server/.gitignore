@@ -1,0 +1,40 @@
+# Node.js dependencies
+/node_modules
+
+# Build output
+/dist/
+/build/
+
+
+# Logs
+/logs
+*.log
+*.log.*
+
+# Dependency directories
+/.pnp/
+/.pnp.js
+
+# OS-specific files
+.DS_Store      # macOS
+Thumbs.db      # Windows
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE / editor directories and files
+.vscode/
+.idea/
+
+# TypeScript build
+*.tsbuildinfo
+
+# npm package lock files (if you want to ignore them)
+# package-lock.json
+# yarn.lock
+
+# Other temporary files
+*.swp
+*~
