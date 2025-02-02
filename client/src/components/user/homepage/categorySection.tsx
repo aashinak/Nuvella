@@ -51,8 +51,7 @@ function CategorySection() {
     return (
       <motion.div
         initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: "all" }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
         className="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6"
       >
