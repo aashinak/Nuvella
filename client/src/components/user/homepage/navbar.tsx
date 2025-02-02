@@ -22,6 +22,7 @@ import {
   ChevronsUpDown,
   Menu,
   Search,
+  SearchCheckIcon,
   ShoppingCart,
   X,
 } from "lucide-react";
@@ -137,8 +138,8 @@ function Navbar() {
       >
         Nuvella.com
       </h1>
-      <div className="xl:w-3/4 w-1/2 md:h-12 h-10 hidden border border-[#808080] border-opacity-50 md:flex items-center rounded-lg p-0.5">
-        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <div className=" w-1/2 md:h-12 h-10 hidden border border-[#808080] border-opacity-50 md:flex items-center rounded-lg p-0.5">
+        {/* <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
@@ -163,27 +164,29 @@ function Navbar() {
               </CommandList>
             </Command>
           </PopoverContent>
-        </Popover>
-        <div className="relative md:w-4/5 h-full">
+        </Popover> */}
+
+        <div className="relative w-full h-full">
           <Input
             onChange={handleSearchChange}
             value={keyword}
             placeholder="Search"
-            className="w-full h-full border-none rounded-l-none"
+            className="w-full h-full border-none "
           />
           {keyword.length > 2 && (
-            <div className="w-4/5 bg-white absolute top-12 z-20 h-96 p-2 border">
+            <div className="w-4/5 bg-white absolute top-12 z-20 h-96 p-2 border rounded-lg">
               <motion.div
+                className="flex space-y-3 flex-col px-3 py-2"
                 key="results-container"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.5 }}
               >
-                Results
+                <p className="font-semibold">Results</p>
                 {searchResult.length > 0 ? (
                   searchResult.map((result, index) => (
-                    <p key={index}>{result}</p>
+                    <p onClick={() => (router.push(`/search/keyword/${result}`))} className="cursor-pointer" key={index}>{result}</p>
                   ))
                 ) : (
                   <div>No results</div>
@@ -191,10 +194,12 @@ function Navbar() {
               </motion.div>
             </div>
           )}
+          
         </div>
         {keyword.length > 2 && (
           <X className="cursor-pointer" onClick={() => setKeyword("")} />
         )}
+        
       </div>
       <div className="flex items-center gap-7">
         <Search className="text-[#808080] md:hidden" />
