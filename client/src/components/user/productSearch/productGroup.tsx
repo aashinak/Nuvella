@@ -3,7 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import ProductCard from "./productCard";
-import { getProductByCategory } from "@/api/user/product/product";
+import {
+  getProductByCategory,
+  searchProductsByKeyword,
+} from "@/api/user/product/product";
 import IProduct from "@/entities/user/IProduct";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -28,14 +31,15 @@ function ProductGroup() {
         let res;
 
         if (type === "category" && searchItem) {
-          res = await getProductByCategory(searchItem); // Call API with category ID
+          res = await getProductByCategory(searchItem);
+          setProducts(res.data);
         } else if (type === "keyword" && searchItem) {
-          // If you have a keyword search, add handling here
-          // For example: res = await getProductsByKeyword(searchItem);
+          res = await searchProductsByKeyword(searchItem);
+
+          setProducts(res.products);
         }
 
         if (res?.data) {
-          setProducts(res.data);
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -65,7 +69,7 @@ function ProductGroup() {
       <div>
         <h1 className="text-2xl font-medium mb-3">
           {products.length} products found{" "}
-          {products[0] ?`for ${products[0]?.categoryId.name}`: ""}
+          {products[0] ? `for ${products[0]?.categoryId.name}` : ""}
         </h1>
         <div className="grid grid-cols-5 gap-6">
           {products.length > 0 ? (
