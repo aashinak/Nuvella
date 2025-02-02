@@ -66,6 +66,25 @@ export const getProductNames = async (
   }
 };
 
+export const searchProductsByKeyword = async (
+  searchKey: string,
+  pageIndex: number = 1
+) => {
+  try {
+    const url = `/user/search/products/keyword?searchKey=${searchKey}&pageIndex=${pageIndex}`;
+
+    const response = await userAxiosInstance.get(url);
+    return response.data;
+  } catch (error: any) {
+    logError(error);
+    // Provide a standardized error response
+    throw {
+      message: "Failed to fetch products.",
+      details: error.response?.data || error.message,
+    };
+  }
+};
+
 export const getProductById = async (productId: string) => {
   try {
     const response = await userAxiosInstance.get(
@@ -282,6 +301,20 @@ export const getOrder = async (orderDocId: string) => {
 export const getNewProducts = async () => {
   try {
     const response = await userAxiosInstance.get(`/user/getNewProducts`);
+    return response.data;
+  } catch (error: any) {
+    logError(error);
+
+    throw {
+      message: "Failed to fetch products.",
+      details: error.response?.data || error.message,
+    };
+  }
+};
+
+export const getTopSellingProducts = async () => {
+  try {
+    const response = await userAxiosInstance.get(`/user/topSellingProducts`);
     return response.data;
   } catch (error: any) {
     logError(error);

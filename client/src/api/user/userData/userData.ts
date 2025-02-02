@@ -1,4 +1,5 @@
 import userAxiosInstance from "@/axios/userAxiosInstance";
+import IUser from "@/entities/user/IUser";
 import IUserAddress from "@/entities/user/IUserAddress";
 
 // Utility function for logging errors
@@ -71,6 +72,27 @@ export const deleteUserAddress = async (addressId: string) => {
     // Provide a standardized error response
     throw {
       message: "Failed to delete address.",
+      details: error.response?.data || error.message,
+    };
+  }
+};
+
+export const updateUserData = async (formData) => {
+  try {
+    const response = await userAxiosInstance.put(
+      `/user/updateUserData`,formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    logError(error);
+    // Provide a standardized error response
+    throw {
+      message: "Failed to update userData.",
       details: error.response?.data || error.message,
     };
   }
