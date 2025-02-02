@@ -42,7 +42,11 @@ function ProductCard({ product }: ProductCardProps) {
         <p className=" font-semibold antialiased">{product.name}</p>
         <div className="flex items-center">
           <IndianRupeeIcon className="h-5" />
-          <p className="text-2xl font-bold">{product.price}</p>
+          <p className="text-2xl font-bold">
+            {product.discountId
+              ? product.discountId.currentProductPrice
+              : product.price}
+          </p>
           <div>
             <p className="text-sm ml-2">
               MRP <s>{product.price}</s>
