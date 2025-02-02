@@ -1,152 +1,300 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton"; // ShadCN Skeleton component
+import { Skeleton } from "@/components/ui/skeleton";
 import { useUserData } from "@/store/user/hooks/useUserData";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { updateUserData } from "@/api/user/userData/userData";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+const profileSchema = z.object({
+  firstname: z.string().min(2, "First name must be at least 2 characters"),
+  lastname: z.string().min(2, "Last name must be at least 2 characters"),
+  phone: z.string().min(10, "Phone number must be valid"),
+  avatar: z.any().optional(),
+});
 
 function ProfileContainer() {
-  const { userData } = useUserData();
+  const { userData, setUserData } = useUserData();
 
-  const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    username: "",
-    email: "",
-    phone: "",
-    avatar: "",
+  const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const form = useForm({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      firstname: "",
+      lastname: "",
+      phone: "",
+      avatar: "",
+      username: "",
+      email: "",
+    },
   });
-  const [isAvatarLoading, setIsAvatarLoading] = useState(false);
 
   useEffect(() => {
     if (userData) {
-      setFormData({
+      form.reset({
         firstname: userData.firstname || "",
         lastname: userData.lastname || "",
-        username: userData.username || "",
-        email: userData.email || "",
         phone: userData.phone || "",
         avatar: userData.avatar || "",
+        username: userData.username || "",
+        email: userData.email || "",
+      });
+      setAvatarPreview(userData.avatar || "");
+    }
+  }, [userData, form]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setAvatarPreview(URL.createObjectURL(file));
+      setAvatarFile(file);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    maxFiles: 1,
+  });
+
+  const handleSubmit = async (data) => {
+    setIsUpdating(true);
+    toast({
+      title: "Updating...",
+      description: "Your profile is being updated.",
+      variant: "default",
+    });
+
+    const formData = new FormData();
+    formData.append("firstname", data.firstname);
+    formData.append("lastname", data.lastname);
+    formData.append("phone", data.phone);
+    if (avatarFile) {
+      formData.append("avatar", avatarFile);
+    }
+
+    try {
+      const res = await updateUserData(formData);
+      setUserData(res.user);
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+      setIsEditing(false);
+    }
+  };
+
+  const handleConfirmAvatar = () => {
+    if (avatarFile) {
+      toast({
+        title: "Avatar Updated",
+        description: "New profile picture selected.",
+      });
+      setOpenDialog(false);
+    } else {
+      toast({
+        title: "No Image Selected",
+        description: "Please select an image before confirming.",
+        variant: "destructive",
       });
     }
-  }, [userData]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setIsAvatarLoading(true);
-      const imageUrl = URL.createObjectURL(file); // Preview the image
-      setFormData((prev) => ({ ...prev, avatar: imageUrl }));
-      // Simulate image upload or process
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Mock delay
-      setIsAvatarLoading(false);
-      // Here, you would upload the file to your server or storage service
-    }
-  };
-
-  const handleSubmit = () => {
-    console.log("Updated Data:", formData);
-    // Add your API call to update the user data here
   };
 
   return (
-    <div className="w-full h-[90vh] flex justify-center items-center">
-      <div className="lg:w-1/2 md:w-3/4 w-full h-auto border rounded-lg shadow-md p-6">
+    <div className="w-full min-h-[90vh] flex justify-center">
+      <ScrollArea className="lg:w-1/2 md:w-3/4 w-full md:border h-[90vh] md:h-[85vh] rounded-lg md:mt-5 shadow-md p-6 flex flex-col overflow-y-auto">
+
+
         <h1 className="text-2xl font-semibold mb-4">Profile</h1>
         <div className="flex flex-col items-center mb-6">
-          <div className="w-24 h-24 relative mb-4">
-            {isAvatarLoading ? (
-              <Skeleton className="w-full h-full rounded-full" />
-            ) : (
+          <div className="w-24 h-24 relative mb-2">
+            {avatarPreview ? (
               <Avatar className="w-full h-full">
                 <AvatarImage
-                  src={formData.avatar}
+                  src={avatarPreview}
                   alt="User Avatar"
                   className="w-full h-full object-cover"
                 />
-                <AvatarFallback>
-                  {formData.username.charAt(0).toUpperCase() || "U"}
-                </AvatarFallback>
+                <AvatarFallback>U</AvatarFallback>
               </Avatar>
+            ) : (
+              <Skeleton className="w-full h-full rounded-full" />
             )}
           </div>
-          <div className="relative">
-            <Input
-              id="avatar"
-              type="file"
-              accept="image/*"
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              onChange={handleAvatarChange}
-            />
-            <Label className="cursor-pointer" htmlFor="avatar">
-              <Button className="cursor-pointer" variant="outline">
-                Change Avatar
-              </Button>
-            </Label>
-          </div>
+
+          {isEditing && (
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="text-sm">
+                  Edit Avatar
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="p-6">
+                <DialogTitle>Upload Profile Picture</DialogTitle>
+                <div
+                  {...getRootProps()}
+                  className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer"
+                >
+                  <input {...getInputProps()} />
+                  {avatarPreview ? (
+                    <Image
+                      src={avatarPreview}
+                      alt="Preview"
+                      width={128}
+                      height={128}
+                      className="w-32 h-32 object-cover mx-auto rounded-full"
+                      unoptimized
+                    />
+                  ) : (
+                    <p>Drag & drop an image here, or click to select one</p>
+                  )}
+                </div>
+                <DialogFooter className="mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setOpenDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleConfirmAvatar}>Confirm</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
-        <form className="space-y-4 p-6">
-          <div>
-            <Label htmlFor="firstname">First Name</Label>
-            <Input
-              id="firstname"
-              name="firstname"
-              value={formData.firstname}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            <Label htmlFor="lastname">Last Name</Label>
-            <Input
-              id="lastname"
-              name="lastname"
-              value={formData.lastname}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div>
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4 p-6"
+          >
+            <FormField
               name="username"
-              value={formData.username}
-              onChange={handleInputChange}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
+
+            <FormField
               name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <div>
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
+
+            <FormField
+              name="firstname"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={!isEditing} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="lastname"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={!isEditing} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
               name="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input {...field} disabled={!isEditing} />
+                  </FormControl>
+                </FormItem>
+              )}
             />
-          </div>
-          <Button onClick={handleSubmit} className="mt-4 w-full">
-            Save Changes
-          </Button>
-        </form>
-      </div>
+
+            <div className="flex justify-end space-x-4">
+              {isEditing ? (
+                <>
+                  <Button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    variant="outline"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={isUpdating}>
+                    {isUpdating ? "Updating..." : "Save Changes"}
+                  </Button>
+                </>
+              ) : (
+                <Button type="button" onClick={() => setIsEditing(true)}>
+                  Edit
+                </Button>
+              )}
+            </div>
+          </form>
+        </Form>
+
+
+      </ScrollArea>
     </div>
   );
 }

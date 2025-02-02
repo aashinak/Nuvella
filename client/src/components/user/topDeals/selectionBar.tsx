@@ -7,7 +7,7 @@ interface Props {
 }
 
 const SelectionBar: React.FC<Props> = ({ setSelectedDeal }) => {
-  const options = ["Top Discounted", "New Arrivals", "Most Sold"];
+  const options = ["New Arrivals", "Top Discounted", "Most Sold"];
   const [selected, setSelected] = useState(0);
 
   

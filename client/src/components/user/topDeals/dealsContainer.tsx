@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import SelectionBar from "./selectionBar";
 import IProduct from "@/entities/user/IProduct";
-import { getNewProducts } from "@/api/user/product/product";
+import { getNewProducts, getTopSellingProducts } from "@/api/user/product/product";
 import ProductCard from "../productSearch/productCard";
 
 function DealsContainer() {
@@ -16,6 +16,11 @@ function DealsContainer() {
         console.log(res);
         const data: IProduct[] = res.products;
         setProducts(data);
+      } else if(selectedDeal === 2) {
+        const res = await getTopSellingProducts();
+        console.log(res);
+        const data: IProduct[] = res.products;
+        setProducts(data);
       }
     } catch (error) {}
   }, [selectedDeal]);
@@ -26,7 +31,7 @@ function DealsContainer() {
 
   return (
     <motion.div
-      className="w-full h-[90vh] md:p-16"
+      className="w-full h-[90vh] md:p-6"
       initial={{ opacity: 0, y: 50 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
