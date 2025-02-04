@@ -28,11 +28,16 @@ export const adminExistsCheck = async (adminId: string) => {
 };
 
 // Admin login
-export const adminLogin = async (email: string, password: string) => {
+export const adminLogin = async (
+  email: string,
+  password: string,
+  adminId: string
+) => {
   try {
     const response = await axiosAdminInstance.post("/admin/login", {
       email,
       password,
+      adminId,
     });
     return response.data;
   } catch (error: any) {
