@@ -35,7 +35,7 @@ function AdminLoginComponent() {
   useEffect(() => {
     if (adminId) {
       adminExistenceCheck(adminId);
-    } 
+    }
   }, [adminId, adminExistenceCheck]);
 
   if (loading) {
@@ -56,7 +56,11 @@ function AdminLoginComponent() {
           </label>{" "}
           Admin Login
         </h1>
-        <LoginForm setIsDialogOpen={setIsDialogOpen} setAdminIdval={setAdminIdval} />
+        <LoginForm
+          adminId={adminId}
+          setIsDialogOpen={setIsDialogOpen}
+          setAdminIdval={setAdminIdval}
+        />
         <OtpForm
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}

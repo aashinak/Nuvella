@@ -35,9 +35,10 @@ const formSchema = z.object({
 interface Props {
   setIsDialogOpen: (value: boolean) => void;
   setAdminIdval: (value: string) => void;
+  adminId: string;
 }
 
-function LoginForm({ setIsDialogOpen, setAdminIdval }: Props) {
+function LoginForm({ setIsDialogOpen, setAdminIdval, adminId }: Props) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -52,7 +53,7 @@ function LoginForm({ setIsDialogOpen, setAdminIdval }: Props) {
   const handleSubmitForm = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const res = await adminLogin(values.email, values.password);
+      const res = await adminLogin(values.email, values.password, adminId);
       setAdminIdval(res.admin._id);
       setIsDialogOpen(true); // Open OTP dialog
       setLoading(false);
