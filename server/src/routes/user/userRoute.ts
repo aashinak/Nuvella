@@ -30,6 +30,7 @@ import {
   initiatePaymentController,
   removeCartItemController,
   searchProductsByIdsController,
+  searchProductsByKeyController,
 } from "../../controllers/user/userProductControllers";
 import { addToCartValidationRules } from "../../validators/user/addToCartValidator";
 import {
@@ -86,6 +87,12 @@ router.get(
   "/search/category",
   createRateLimiter({ max: 100 }),
   asyncHandler(getProductByCategoryController)
+);
+
+router.get(
+  "/search/products/keyword",
+  createRateLimiter({ max: 100 }),
+  asyncHandler(searchProductsByKeyController)
 );
 
 router.get(
@@ -214,10 +221,11 @@ router.get(
   asyncHandler(fetchUserDataController)
 );
 
-router.post(
+router.put(
   "/updateUserData",
   createRateLimiter({ max: 30 }),
   isUserAuthenticated,
+  upload.single("avatar"),
   asyncHandler(updateUserDataController)
 );
 
