@@ -12,4 +12,5 @@ export default interface IProduct {
   stock: number;
   sizes: { size: string; stock: number }[];
   discountId?: string;
+  discountedPrice?: string
 }
