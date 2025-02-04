@@ -40,13 +40,10 @@ const createOrderItems = async (data: IOrderItem[]) => {
     let finalPrice: number;
 
     // Determine the final price
-    if (
-      typeof product.discountId === "object" &&
-      (product.discountId as IProductDiscount).currentProductPrice
-    ) {
-      finalPrice = (product.discountId as IProductDiscount).currentProductPrice;
+    if (product.discountedPrice) {
+      finalPrice = product.discountedPrice;
     } else {
-      finalPrice = parseFloat(product.price);
+      finalPrice = product.price;
     }
 
     // Calculate the total price for this order item
@@ -54,7 +51,6 @@ const createOrderItems = async (data: IOrderItem[]) => {
     orderItem.totalPrice = itemTotal;
     totalAmount += itemTotal;
   });
-
 
   let order;
   try {
