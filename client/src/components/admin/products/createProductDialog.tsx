@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { motion } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -26,13 +27,20 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { useCategoryData } from "@/store/hooks/useCategoryData";
-import { createProduct } from "@/api/admin/product/product";
+import {
+  createDiscount,
+  createProduct,
+  getProductDiscounts,
+} from "@/api/admin/product/product";
 import IProduct from "@/entities/IProduct";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import IProductDiscount from "@/entities/IProductDiscount";
 
 // Validation Schema
 const formSchema = z.object({
@@ -50,9 +58,9 @@ const formSchema = z.object({
   ),
   categoryId: z.string(),
 
-  // discountId: z
-  //   .string()
-  //   .regex(/^[0-9a-fA-F]{24}$/, "Invalid discount ID format."),
+  discountId: z
+    .string()
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid discount ID format."),
 });
 
 interface Props {
@@ -62,11 +70,15 @@ interface Props {
 
 const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
   const { toast } = useToast();
+  const [discountData, setDiscountData] = useState<IProductDiscount[]>([]);
   const [loading, setLoading] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [activeSizes, setActiveSizes] = useState<Record<string, number>>({}); // Tracks active sizes and their stock counts
+  const [activeSizes, setActiveSizes] = useState<Record<string, number>>({});
   const { categoryData } = useCategoryData();
+  const [isCreateDiscountOpen, setIsCreateDiscountOpen] = useState(false);
+  const [discountName, setDiscountName] = useState<string>("");
+  const [discountPercentage, setDiscountPercentage] = useState<number>(0);
 
   const sizes = ["S", "M", "L", "XL", "2XL"]; // Define available sizes
 
@@ -79,7 +91,7 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
       stock: 0,
       sizes: [],
       categoryId: "",
-      // discountId: "",
+      discountId: undefined,
     },
   });
 
@@ -117,6 +129,18 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
     }));
   };
 
+  // fetch discount details
+  useEffect(() => {
+    const fetchDiscount = async () => {
+      try {
+        const response = await getProductDiscounts();
+        console.log(response);
+        setDiscountData(response.data);
+      } catch (error) {}
+    };
+    fetchDiscount();
+  }, []);
+
   // Update the stock field dynamically based on active sizes
   useEffect(() => {
     if (Object.keys(activeSizes).length > 0) {
@@ -126,7 +150,7 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
         stock,
       }));
       form.setValue("sizes", updatedSizes); // Set the sizes field
-  
+
       // Update stock with the total stock
       const totalStock = updatedSizes.reduce(
         (acc, { stock }) => acc + stock,
@@ -139,7 +163,6 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
       form.setValue("stock", 0); // Reset stock to 0
     }
   }, [activeSizes, form]);
-  
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log(values);
@@ -162,6 +185,8 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
       formData.append("price", values.price);
       formData.append("stock", values.stock.toString());
       formData.append("categoryId", values.categoryId);
+      formData.append("discountId", values.discountId);
+
       console.log(activeSizes);
 
       if (Object.keys(activeSizes).length > 0) {
@@ -178,13 +203,19 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
       }
 
       files.forEach((file) => formData.append("images", file));
-      // Log the formData entries
-      formData.forEach((value, key) => {
-        console.log(key, value);
-      });
 
       const res = await createProduct(formData);
-      console.log(res);
+      if (res.success) {
+        toast({
+          title: "Product Created",
+          description: "Product has been successfully created.",
+        });
+        form.reset();
+        setFiles([]);
+        setImagePreviews([]);
+        setActiveSizes({});
+        setIsDialogOpen(false);
+      }
 
       // Submit data here
     } catch (error) {
@@ -198,9 +229,30 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
     }
   };
 
+  const createDiscountHandler = useCallback(async () => {
+    try {
+      const response = await createDiscount({
+        name: discountName,
+        discount_percentage: discountPercentage,
+      });
+      toast({
+        title: "Discount Created",
+        description: "Discount has been successfully created.",
+      });
+      setDiscountData((prev) => [...prev, response.discount]);
+      setIsCreateDiscountOpen(false);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unable to create discount. Please try again.",
+      });
+      console.error("Error creating discount", error);
+    }
+  }, [discountName, discountPercentage, toast]);
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-      <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>Create New Product</DialogTitle>
           <DialogDescription>
@@ -208,11 +260,11 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="overflow-y-auto flex-1 px-4">
+        <ScrollArea className="p-2  h-full">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-4"
+              className="space-y-4 p-2"
             >
               <FormField
                 control={form.control}
@@ -285,6 +337,89 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
                   </FormItem>
                 )}
               />
+
+              <div className="flex justify-between items-end">
+                <FormField
+                  control={form.control}
+                  name="discountId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Discount</FormLabel>
+                      <Select
+                        value={field.value} // Control the value of Select
+                        onValueChange={(value) => {
+                          form.setValue("discountId", value); // Set the value in form state
+                        }}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Discounts" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {discountData && discountData.length > 0
+                              ? discountData.map((discount) => (
+                                  <SelectItem
+                                    key={discount._id}
+                                    value={discount._id as string}
+                                  >
+                                    {discount.name} -{" "}
+                                    {discount.discount_percentage}%
+                                  </SelectItem>
+                                ))
+                              : null}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type="button"
+                  onClick={() => setIsCreateDiscountOpen(true)}
+                  variant={"secondary"}
+                >
+                  Create discount
+                </Button>
+              </div>
+              {isCreateDiscountOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                  className="border rounded-md p-2 space-y-4"
+                >
+                  <div className="flex justify-end items-center">
+                    <Button
+                      variant={"ghost"}
+                      type="button"
+                      onClick={() => setIsCreateDiscountOpen(false)}
+                    >
+                      X
+                    </Button>
+                  </div>
+                  <Input
+                    value={discountName}
+                    onChange={(e) => setDiscountName(e.target.value)}
+                    placeholder="Discount Name"
+                  />
+                  <Input
+                    value={discountPercentage}
+                    onChange={(e) =>
+                      setDiscountPercentage(Number(e.target.value))
+                    }
+                    placeholder="Discount Percentage (in percentage)"
+                  />
+                  <Button
+                    onClick={createDiscountHandler}
+                    className=""
+                    type="button"
+                  >
+                    Create Discount
+                  </Button>
+                </motion.div>
+              )}
 
               <FormField
                 control={form.control}
@@ -386,7 +521,7 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
               </DialogFooter>
             </form>
           </Form>
-        </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
