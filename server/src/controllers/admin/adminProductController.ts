@@ -8,6 +8,9 @@ import viewAllCategory from "../../usecases/admin/productManagement/category/vie
 import deleteCategory from "../../usecases/admin/productManagement/category/deleteCategory";
 import createProduct from "../../usecases/admin/productManagement/product/createProduct";
 import getProductByCategory from "../../usecases/admin/productManagement/category/getProductByCategory";
+import viewAllDiscounts from "../../usecases/admin/productManagement/discount/viewAllDiscounts";
+import deleteDiscount from "../../usecases/admin/productManagement/discount/deleteDiscount";
+import createDiscount from "../../usecases/admin/productManagement/discount/createDiscount";
 
 //-------------------- Category Controllers ---------------------------
 
@@ -173,5 +176,69 @@ export const getProductByCategoryController = async (
   res.status(200).json({
     message: response.message,
     data: response.data,
+    success: true,
+  });
+};
+
+export const getProductsDiscountController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    validationErrorHandler(errors.array());
+  }
+
+  const response = await viewAllDiscounts();
+  if (!response) throw new ApiError(500, "Couldnt fetch discounts");
+  res.status(200).json({
+    message: response.message,
+    data: response.data,
+    success: true,
+  });
+};
+
+export const deleteProductsDiscountController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    validationErrorHandler(errors.array());
+  }
+
+  const { discountId } = req.body;
+
+  const response = await deleteDiscount(discountId);
+  if (!response) throw new ApiError(500, "Couldnt delete discount");
+  res.status(200).json({
+    message: response.message,
+    success: true,
+  });
+};
+
+export const createProductsDiscountController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    validationErrorHandler(errors.array());
+  }
+
+  const { name, discount_percentage } = req.body;
+
+  const response = await createDiscount({ name, discount_percentage });
+  if (!response) throw new ApiError(500, "Couldnt create discount");
+  res.status(200).json({
+    message: response.message,
+    discount: response.discount,
+    success: true,
   });
 };
