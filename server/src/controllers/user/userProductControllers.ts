@@ -19,6 +19,7 @@ import clearCart from "../../usecases/user/cart/clearCart";
 import removeItemsFromCart from "../../usecases/user/cart/removeItemsFromCart";
 import getOrderById from "../../usecases/user/order/getOrderById";
 import cancelOrder from "../../usecases/user/order/cancelOrder";
+import searchProductsByKeyword from "../../usecases/user/product/searchProductsByKeyword";
 
 export const getCategoriesController = async (
   req: Request,
@@ -79,6 +80,34 @@ export const getProductNameController = async (
   res.status(200).json({
     message: "Product names fetched successfully",
     data: productNames.data,
+    success: true,
+  });
+};
+
+export const searchProductsByKeyController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  let { searchKey, pageIndex } = req.query;
+
+  // Validate query parameters
+  if (typeof searchKey !== "string") {
+    throw new ApiError(400, "Invalid or missing 'searchKey'");
+  }
+
+  const pageIndexNumber = parseInt(pageIndex as string, 10) || 1;
+
+  // Fetch product names
+  const productsData = await searchProductsByKeyword(
+    searchKey,
+    pageIndexNumber
+  );
+
+  // Send response
+  res.status(200).json({
+    message: productsData.message,
+    products: productsData.products,
     success: true,
   });
 };

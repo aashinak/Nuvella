@@ -71,7 +71,13 @@ export const updateUserDataController = async (
   next: NextFunction
 ): Promise<void> => {
   const userId = req.userId as string;
-  const { updateData } = req.body;
-  const response = await updateUserData(userId, updateData);
+  const avatar = req.file?.path as string;
+  const { firstname, lastname, phone } = req.body;
+  const response = await updateUserData(userId, {
+    avatar,
+    firstname,
+    lastname,
+    phone,
+  });
   res.json({ message: response.message, user: response.user });
 };
