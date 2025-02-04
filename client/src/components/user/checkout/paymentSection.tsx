@@ -20,7 +20,8 @@ const PaymentDetailsSection: React.FC<Props> = ({
   isPaymentButtonActive,
 }) => {
   const { orderItems, address } = useUserOrder();
-  const [razorpayScriptLoaded, setRazorpayScriptLoaded] = useState<boolean>(false);
+  const [razorpayScriptLoaded, setRazorpayScriptLoaded] =
+    useState<boolean>(false);
   const { userData } = useUserData();
   const { toast } = useToast();
   const router = useRouter(); // Initialize router
@@ -50,7 +51,8 @@ const PaymentDetailsSection: React.FC<Props> = ({
     if (!razorpayScriptLoaded) {
       toast({
         title: "Error",
-        description: "Razorpay script is not loaded yet. Please try again later.",
+        description:
+          "Razorpay script is not loaded yet. Please try again later.",
         variant: "destructive",
       });
       return;
@@ -113,7 +115,8 @@ const PaymentDetailsSection: React.FC<Props> = ({
       console.error("Error during payment:", error);
       toast({
         title: "Payment Error",
-        description: "Something went wrong during the payment process. Please try again.",
+        description:
+          "Something went wrong during the payment process. Please try again.",
         variant: "destructive",
       });
     }
@@ -121,7 +124,9 @@ const PaymentDetailsSection: React.FC<Props> = ({
 
   return (
     <div className="w-full lg:w-auto border p-4 rounded-md shadow-sm bg-gray-100">
-      <h2 className="text-lg font-medium text-gray-700 mb-4">Payment Details</h2>
+      <h2 className="text-lg font-medium text-gray-700 mb-4">
+        Payment Details
+      </h2>
       <div className="flex flex-col gap-3">
         {orderItemsData.map((item, index) => (
           <div
@@ -131,7 +136,12 @@ const PaymentDetailsSection: React.FC<Props> = ({
             <span>
               {item.product.name} (x{item.quantity})
             </span>
-            <span>₹{+item.product.price * item.quantity}</span>
+            <span>
+              ₹
+              {item.product.discountedPrice
+                ? +item.product.discountedPrice * item.quantity
+                : +item.product.price * item.quantity}
+            </span>
           </div>
         ))}
         <div className="flex justify-between font-semibold text-gray-900 border-t pt-2">

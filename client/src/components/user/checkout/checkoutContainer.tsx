@@ -67,7 +67,11 @@ function CheckoutContainer() {
   const totalPrice = useMemo(
     () =>
       orderItems.reduce(
-        (acc, item) => acc + +item.product.price * item.quantity,
+        (acc, item) =>
+          acc +
+          (item.product.discountedPrice
+            ? +item.product.discountedPrice * item.quantity
+            : +item.product.price * item.quantity),
         0
       ),
     [orderItems]

@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getUserAddresses, addNewAddress } from "@/api/user/product/product";
+import { getUserAddresses } from "@/api/user/product/product";
 import { useUserData } from "@/store/user/hooks/useUserData";
 import IUserAddress from "@/entities/user/IUserAddress";
 import { useUserOrder } from "@/store/user/hooks/useUserOrder";

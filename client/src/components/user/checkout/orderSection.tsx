@@ -84,7 +84,12 @@ const OrderItemsSection: React.FC<Props> = ({
                           {handleDropdown(item, index)}
                         </DropdownMenuContent>
                       </DropdownMenu>
-                      <span>₹{+item.product.price * item.quantity}</span>
+                      <span>
+                        ₹
+                        {item.product.discountedPrice
+                          ? +item.product.discountedPrice * item.quantity
+                          : +item.product.price * item.quantity}
+                      </span>
                     </div>
                   </div>
                 ))}
