@@ -1,5 +1,3 @@
-"use client";
-
 import AdminLoginComponent from "@/components/admin/login/wraper";
 
 function Page() {
