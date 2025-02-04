@@ -6,7 +6,7 @@ import ApiError from "../../utils/apiError";
 class ProductDiscountRepository {
   // Create a new product discount
   async createProductDiscount(
-    discountData: IProductDiscount
+    discountData: Partial<IProductDiscount>
   ): Promise<IProductDiscount> {
     try {
       const productDiscount = new ProductDiscount(discountData);
