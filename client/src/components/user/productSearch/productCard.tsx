@@ -43,9 +43,7 @@ function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center">
           <IndianRupeeIcon className="h-5" />
           <p className="text-2xl font-bold">
-            {product.discountId
-              ? product.discountId.currentProductPrice
-              : product.price}
+            {product.discountedPrice ?? product.price}
           </p>
           <div>
             <p className="text-sm ml-2">

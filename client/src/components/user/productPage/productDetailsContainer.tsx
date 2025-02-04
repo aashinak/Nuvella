@@ -39,7 +39,8 @@ const ProductDetailsContainer: React.FC<ProductDetailsContainerProps> = ({
       </p>
       <div className="flex items-center gap-2">
         <IndianRupeeIcon />
-        <h2 className="text-2xl font-bold">{product.discountId?.currentProductPrice ?? product.price}
+        <h2 className="text-2xl font-bold">
+          {product.discountedPrice ?? product.price}
         </h2>
         <div className="flex">
           <p className="text-sm">
@@ -53,7 +54,14 @@ const ProductDetailsContainer: React.FC<ProductDetailsContainerProps> = ({
         ) : product.stock === 0 ? (
           <h2 className="text-red-600">Out of stock</h2>
         ) : null}
-
+        {product.discountId && (
+          <div className="bg-yellow-100 text-yellow-800 text-sm font-semibold px-3 py-1 rounded-full whitespace-nowrap w-fit">
+            <span className="mr-2">🎉</span>{" "}
+            {/* Optional: Add an emoji or icon */}
+            {product.discountId.name} get upto{" "}
+            {product.discountId.discount_percentage}% off
+          </div>
+        )}
         <h2 className="font-semibold">Select Size</h2>
         <div className="w-full flex gap-2">
           {product.sizes?.map((size, index) => (
