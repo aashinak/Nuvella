@@ -11,6 +11,7 @@ import logger from "../../../utils/logger";
 interface adminData {
   email: string;
   password: string;
+  adminId: string;
 }
 
 const adminLogin = async (data: adminData) => {
@@ -18,9 +19,15 @@ const adminLogin = async (data: adminData) => {
   if (!existingAdmin) {
     throw new ApiError(400, "Admin doesn't exists");
   }
-  
-  if(existingAdmin.isBlocked){
-    throw new ApiError(400, "Admin blocked")
+
+  if (existingAdmin.isBlocked) {
+    throw new ApiError(400, "Admin blocked");
+  }
+
+  console.log(existingAdmin._id, data.adminId);
+
+  if (existingAdmin._id?.toString() !== data.adminId) {
+    throw new ApiError(400, "Invalid admin id");
   }
 
   const isPasswordVerified = await hashService.comparePassword(
@@ -73,4 +80,4 @@ const adminLogin = async (data: adminData) => {
   return { message: "Admin credentials verified", admin: sanitizedAdmin };
 };
 
-export default adminLogin
+export default adminLogin;
