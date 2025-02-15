@@ -4,8 +4,10 @@ import { userRegistrationValidationRules } from "../../validators/user/userRegis
 import asyncHandler from "../../utils/asyncHandler";
 import {
   userLoginController,
+  userLoginWithGoogleController,
   userLogoutController,
   userRegisterationVerificationController,
+  userRegisterationVerificationResendController,
   userRegisterController,
   userTokenRegenController,
 } from "../../controllers/user/userAuthControllers";
@@ -46,6 +48,7 @@ import {
   getRecentProductsController,
   topSellingProductsController,
 } from "../../controllers/user/productStatisticController";
+import { userRegOtpResendValidationRules } from "../../validators/user/userVerificationResendValidator";
 
 export const router = Router();
 
@@ -65,10 +68,23 @@ router.post(
 );
 
 router.post(
+  "/userVerificationResend",
+  createRateLimiter({ max: 6 }),
+  userRegOtpResendValidationRules,
+  asyncHandler(userRegisterationVerificationResendController)
+);
+
+router.post(
   "/login",
   createRateLimiter({ max: 3 }),
   userLoginValidationRules,
   asyncHandler(userLoginController)
+);
+
+router.post(
+  "/loginWithGoogle",
+  createRateLimiter({ max: 3 }),
+  asyncHandler(userLoginWithGoogleController)
 );
 
 router.get(

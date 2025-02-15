@@ -31,7 +31,9 @@ import {
   createProductController,
   createProductsDiscountController,
   deleteCategoryController,
+  deleteProductController,
   deleteProductsDiscountController,
+  getAllOrdersController,
   getCategoryController,
   getProductByCategoryController,
   getProductsDiscountController,
@@ -43,6 +45,8 @@ import { productValidationRules } from "../../validators/admin/productValidator"
 import { validateCategoryId } from "../../validators/admin/getProductByCategoryValidator";
 import { validateDiscountId } from "../../validators/admin/validateDiscountId";
 import { createDiscountValidation } from "../../validators/admin/discountCreateValidation";
+import { validateProductId } from "../../validators/admin/validateProductId";
+import { validateOrderQueryParams } from "../../validators/admin/validateOrderQueryParams";
 
 export const router = Router();
 
@@ -164,6 +168,14 @@ router.post(
   asyncHandler(createProductController)
 );
 
+router.delete(
+  "/deleteProduct/:productId",
+  createRateLimiter({ max: 30 }),
+  isAuthenticated,
+  validateProductId,
+  asyncHandler(deleteProductController)
+);
+
 router.get(
   "/getProductsByCategory/:categoryId",
   createRateLimiter({ max: 80 }),
@@ -193,4 +205,12 @@ router.post(
   isAuthenticated,
   createDiscountValidation,
   asyncHandler(createProductsDiscountController)
+);
+
+router.get(
+  "/getOrders",
+  createRateLimiter({ max: 80 }),
+  isAuthenticated,
+  validateOrderQueryParams,
+  asyncHandler(getAllOrdersController)
 );
