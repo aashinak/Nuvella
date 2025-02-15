@@ -2,11 +2,11 @@ import ProductPageContainer from "@/components/user/productPage/productPageConta
 import React from "react";
 
 interface PageProps {
-  params: { productId: string };
+  params: Promise<{ productId: string }>;
 }
 
 async function Page({ params }: PageProps) {
-  const { productId } = params;
+  const { productId } = await params;
 
   return <ProductPageContainer productId={productId} />;
 }
