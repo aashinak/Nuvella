@@ -1,3 +1,4 @@
+import redisClient from "../../../../config/redis/redis-client";
 import IUser from "../../../../entities/user/IUser";
 import userOtpRepository from "../../../../repository/user/userOtpRepository";
 import userRepository from "../../../../repository/user/userRepository";
@@ -42,6 +43,8 @@ const userLogin = async (email: string, password: string) => {
       "USER_REGISTRATION"
     );
     const isEmailSent = await sendMail(mail);
+    await redisClient.del(`otp:${existingUser._id}`);
+
     throw new ApiError(400, "User not verified", undefined, {
       userId: existingUser._id,
     });
