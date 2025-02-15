@@ -1,9 +1,8 @@
-import React from 'react'
+import SignupLayout from "@/components/user/signup/signupLayout";
+import React from "react";
 
 function page() {
-  return (
-    <div>signup</div>
-  )
+  return <SignupLayout />;
 }
 
-export default page
+export default page;

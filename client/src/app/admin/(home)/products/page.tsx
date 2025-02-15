@@ -1,5 +1,6 @@
-import Category from '@/components/admin/products/category'
-import Products from '@/components/admin/products/products'
+
+import Category from '@/components/admin/products/categorySection/category'
+import Products from '@/components/admin/products/productSection/products'
 import React from 'react'
 
 function Page() {
