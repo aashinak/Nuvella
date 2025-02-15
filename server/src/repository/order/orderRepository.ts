@@ -5,6 +5,7 @@ import ApiError from "../../utils/apiError";
 import productRepository from "../product/productRepository";
 import orderItemRepository from "./orderItemRepository";
 import mongoose from "mongoose";
+import { startOfDay, startOfMonth, startOfYear } from "date-fns";
 
 class OrderRepository {
   /**
@@ -67,6 +68,140 @@ class OrderRepository {
       return await Order.find({ customerId })
         .select("-customerId -address -updatedAt -paymentId -__v")
         .sort({ createdAt: -1 });
+    } catch (error: any) {
+      logger.error("Error fetching all orders: ", error);
+      throw new ApiError(500, "Failed to fetch orders", [error.message]);
+    }
+  }
+
+  async getAllOrdersForAdmin(
+    pageIndex: number = 1,
+    filterCondition: "today" | "month" | "year" = "today",
+    monthNumber?: number, // Optional: Specify a month (1-12)
+    year?: number // Optional: Specify a year (default: current year)
+  ): Promise<IOrder[]> {
+    try {
+      const now = new Date();
+      const selectedYear = year || now.getFullYear(); // Default to current year
+      let dateFilter = {};
+
+      if (filterCondition === "today") {
+        // Orders created today
+        dateFilter = { createdAt: { $gte: startOfDay(now) } };
+      } else if (filterCondition === "month") {
+        if (monthNumber) {
+          // Orders for a specific month in a specific year
+          dateFilter = {
+            $expr: {
+              $and: [
+                { $eq: [{ $year: "$createdAt" }, selectedYear] }, // Given year
+                { $eq: [{ $month: "$createdAt" }, monthNumber] }, // Given month
+              ],
+            },
+          };
+        } else {
+          // Orders for the current month in the selected year
+          dateFilter = {
+            $expr: {
+              $and: [
+                { $eq: [{ $year: "$createdAt" }, selectedYear] }, // Selected year
+                { $eq: [{ $month: "$createdAt" }, now.getMonth() + 1] }, // Current month
+              ],
+            },
+          };
+        }
+      } else if (filterCondition === "year") {
+        // Orders for a specific year
+        dateFilter = {
+          $expr: {
+            $eq: [{ $year: "$createdAt" }, selectedYear],
+          },
+        };
+      }
+
+      const orders = await Order.aggregate([
+        { $match: dateFilter }, // Apply date filter
+        { $sort: { createdAt: -1 } }, // Sort by latest created first
+        { $skip: (pageIndex - 1) * 10 },
+        { $limit: 10 },
+
+        // Lookup address details
+        {
+          $lookup: {
+            from: "useraddresses",
+            localField: "address",
+            foreignField: "_id",
+            as: "address",
+            pipeline: [
+              {
+                $project: {
+                  __v: 0,
+                  createdAt: 0,
+                  updatedAt: 0,
+                  userId: 0,
+                },
+              },
+            ],
+          },
+        },
+        { $addFields: { address: { $arrayElemAt: ["$address", 0] } } },
+
+        // Lookup order items
+        {
+          $lookup: {
+            from: "orderitems",
+            localField: "orderItems",
+            foreignField: "_id",
+            as: "orderItems",
+          },
+        },
+        { $unwind: "$orderItems" },
+
+        // Lookup product details
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderItems.product",
+            foreignField: "_id",
+            as: "orderItems.productDetails",
+          },
+        },
+
+        // Lookup customer details
+        {
+          $lookup: {
+            from: "users",
+            localField: "customerId",
+            foreignField: "_id",
+            as: "customerDetails",
+          },
+        },
+        {
+          $addFields: {
+            customerDetails: { $arrayElemAt: ["$customerDetails", 0] },
+          },
+        },
+
+        // Group order items back into an array
+        {
+          $group: {
+            _id: "$_id",
+            orderId: { $first: "$orderId" },
+            paymentMethod: { $first: "$paymentMethod" },
+            customerId: { $first: "$customerId" },
+            customerDetails: { $first: "$customerDetails" },
+            orderItems: { $push: "$orderItems" },
+            address: { $first: "$address" },
+            status: { $first: "$status" },
+            paymentId: { $first: "$paymentId" },
+            totalAmount: { $first: "$totalAmount" },
+            createdAt: { $first: "$createdAt" },
+            updatedAt: { $first: "$updatedAt" },
+          },
+        },
+      ]);
+
+      return orders;
     } catch (error: any) {
       logger.error("Error fetching all orders: ", error);
       throw new ApiError(500, "Failed to fetch orders", [error.message]);
@@ -253,7 +388,7 @@ class OrderRepository {
           $replaceRoot: { newRoot: "$product" }, // Makes "product" the top-level document
         },
       ]);
-      
+
       return products || null;
     } catch (error: any) {
       logger.error(`Error fetching products`);

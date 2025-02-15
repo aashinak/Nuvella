@@ -66,7 +66,7 @@ class ProductRepository {
       }
 
       // Use .select to fetch only the 'name' field
-      const products = await Product.find(query).select("name");
+      const products = await Product.find(query).select("name").limit(7);
       return products.map((product) => product.name); // Extract names
     } catch (error: any) {
       logger.error("Error finding product names", {
