@@ -66,7 +66,7 @@ class ProductRepository {
       }
 
       // Use .select to fetch only the 'name' field
-      const products = await Product.find(query).select("name");
+      const products = await Product.find(query).select("name").limit(7);
       return products.map((product) => product.name); // Extract names
     } catch (error: any) {
       logger.error("Error finding product names", {
@@ -333,6 +333,64 @@ class ProductRepository {
       throw new ApiError(500, "Internal Server Error while finding products", [
         error.message,
       ]);
+    }
+  }
+
+  /**
+   * Search products by name.
+   *
+   * This method returns products that exactly match the given name (case‑insensitive)
+   * and also products that have a partial match in their name.
+   * The exact matches will appear at the beginning of the returned list.
+   *
+   * @param searchKey - The full product name provided as the search key.
+   * @returns An array of matching products with exact matches first.
+   */
+  async searchProductByName(
+    searchKey: string,
+    pageIndex: number = 1
+  ): Promise<IProduct[]> {
+    try {
+      // 1. Find a product with an exact match for the name (case-insensitive)
+      const exactMatch = await Product.findOne({
+        name: { $regex: `^${searchKey}$`, $options: "i" },
+      })
+        .populate("categoryId")
+        .populate("discountId");
+
+      let extraProducts: IProduct[] = [];
+
+      // 2. If an exact match is found, fetch extra products from the same category
+      if (exactMatch) {
+        // Determine the category id (handles both populated and non-populated values)
+        const categoryId =
+          exactMatch.categoryId && (exactMatch.categoryId as any)._id
+            ? (exactMatch.categoryId as any)._id
+            : exactMatch.categoryId;
+
+        const pageSize = 20;
+        const skip = (pageIndex - 1) * pageSize;
+        extraProducts = await Product.find({
+          categoryId: categoryId,
+          _id: { $ne: exactMatch._id }, // Exclude the exact match
+        })
+          .populate("categoryId")
+          .populate("discountId")
+          .skip(skip)
+          .limit(pageSize);
+      }
+      // 3. Return the exact match first (if any), followed by extra products
+      return [exactMatch!, ...extraProducts];
+    } catch (error: any) {
+      logger.error(
+        `Error searching product by name with search key: ${searchKey}`,
+        error
+      );
+      throw new ApiError(
+        500,
+        "Internal Server Error while searching product by name",
+        [error.message]
+      );
     }
   }
 }

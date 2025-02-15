@@ -24,14 +24,7 @@ const ProductDiscountSchema: Schema = new Schema(
       required: true,
       default: true,
     },
-    currentProductPrice: {
-      type: Number,
-      required: true,
-    },
   },
-  {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
-  }
 );
 
 // Create the ProductDiscount model

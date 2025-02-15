@@ -1,5 +1,6 @@
 import IProduct from "../../../../entities/product/IProduct";
 import productCategoryRepository from "../../../../repository/product/productCategoryRepository";
+import productDiscountRepository from "../../../../repository/product/productDiscountRepository";
 import productRepository from "../../../../repository/product/productRepository";
 import ApiError from "../../../../utils/apiError";
 import cleanUpAvatar from "../../../../utils/avatarCleanup";
@@ -33,6 +34,18 @@ const createProduct = async (data: Partial<IProduct>) => {
 
     // Update product data with the image URLs
     data.images = imageUrls;
+  }
+
+  if (data.discountId) {
+    const discount = await productDiscountRepository.getProductDiscountById(
+      data.discountId as string
+    );
+    if (!discount) {
+      throw new ApiError(400, "Invalid discountId");
+    }
+    data.discountedPrice =
+      (data.price as number) -
+      ((data.price as number) * discount.discount_percentage) / 100;
   }
 
   // Create the new product with the updated data (including the image URLs)

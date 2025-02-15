@@ -24,7 +24,7 @@ const ProductSchema: Schema = new Schema(
       },
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
       validate: {
         validator: (v: string) => /^[0-9]+(\.[0-9]{1,2})?$/.test(v),
@@ -53,6 +53,9 @@ const ProductSchema: Schema = new Schema(
     discountId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ProductDiscount",
+    },
+    discountedPrice: {
+      type: Number,
     },
   },
   {
