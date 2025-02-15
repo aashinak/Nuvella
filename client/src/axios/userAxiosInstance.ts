@@ -11,16 +11,13 @@ export const getAccessToken = () => {
 
 // Create an Axios instance
 const userAxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL, // Base API URL
-  withCredentials: true, // Send cookies with requests
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
 });
 
 // Request interceptor: Attach access token if available
 userAxiosInstance.interceptors.request.use(
   (config) => {
-    console.log(accessToken);
-
-    // Use the `accessToken` stored in memory
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
@@ -29,9 +26,8 @@ userAxiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor: Handle 401 Unauthorized (token expiration)
 userAxiosInstance.interceptors.response.use(
-  (response) => response, // Return the response if everything is fine
+  (response) => response,
 
   async (error) => {
     const originalRequest = error.config;
@@ -48,27 +44,23 @@ userAxiosInstance.interceptors.response.use(
         // Attempt to refresh the token
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/user/userTokenRegen`,
-          {}, // No body needed, refresh token sent via cookie
-          { withCredentials: true } // Ensure cookies are sent
+          {},
+          { withCredentials: true }
         );
 
         // Save the new access token to memory
         const { accessToken: newAccessToken } = response.data;
         setAccessToken(newAccessToken);
 
-        // Retry the original request with the new access token
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
         return userAxiosInstance(originalRequest);
-      } catch (err) {
-        // If refreshing fails, redirect to login page
+      } catch {
         console.error("Token refresh failed, logging out...");
         setAccessToken(null);
-        // Redirect to login page or trigger logout flow
         window.location.href = "/";
       }
     }
 
-    // If it's another error (not 401), just reject the promise
     return Promise.reject(error);
   }
 );

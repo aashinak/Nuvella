@@ -18,7 +18,6 @@ const adminAxiosInstance = axios.create({
 // Request interceptor: Attach access token if available
 adminAxiosInstance.interceptors.request.use(
   (config) => {
-    console.log(accessToken);
 
     // Use the `accessToken` stored in memory
     if (accessToken) {
@@ -59,7 +58,7 @@ adminAxiosInstance.interceptors.response.use(
         // Retry the original request with the new access token
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
         return adminAxiosInstance(originalRequest);
-      } catch (err) {
+      } catch  {
         // If refreshing fails, redirect to login page
         console.error("Token refresh failed, logging out...");
         setAccessToken(null);
