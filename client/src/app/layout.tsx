@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ClientProvider from "@/components/user/homepage/clientProvider";
-import TopSection from "@/components/user/homepage/topSection";
-import Navbar from "@/components/user/homepage/navbar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const geistSans = localFont({
@@ -30,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#ffffff] overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable}  antialiased bg-[#ffffff] overflow-x-hidden`}
       >
-        <ClientProvider>{children}</ClientProvider>
+        <ScrollArea className="h-screen">
+          <ClientProvider>{children}</ClientProvider>
+        </ScrollArea>
       </body>
     </html>
   );
