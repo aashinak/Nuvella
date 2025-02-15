@@ -4,17 +4,15 @@ import OrderCard from "./orderCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getOrders } from "@/api/user/product/product";
-import { useUserData } from "@/store/user/hooks/useUserData";
 import IOrder from "@/entities/user/IOrder";
 
 function OrderContainer() {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [loading, setLoading] = useState(true);
-  const { userData } = useUserData();
 
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await getOrders(userData?._id as string);
+      const res = await getOrders();
       console.log(res);
       const data: IOrder[] = res.orders;
       setOrders(data);
@@ -23,7 +21,7 @@ function OrderContainer() {
     } finally {
       setLoading(false);
     }
-  }, [userData?._id]);
+  }, []);
 
   useEffect(() => {
     fetchOrders();

@@ -1,34 +1,10 @@
 "use client";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import {
-  Bell,
-  Check,
-  ChevronsUpDown,
-  Menu,
-  Search,
-  SearchCheckIcon,
-  ShoppingCart,
-  X,
-} from "lucide-react";
+
+import { Bell, Menu, Search, ShoppingCart, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useUserCategoryData } from "@/store/user/hooks/useUserCategoryData";
 import { useDebounce } from "@/hooks/useDebounce"; // A custom hook for debouncing
 import { getProductNames } from "@/api/user/product/product";
 import { useUserData } from "@/store/user/hooks/useUserData";
@@ -44,27 +20,30 @@ import { userLogout } from "@/api/user/auth/auth";
 function Navbar() {
   const router = useRouter();
   const { isLoggedIn, userData, logoutUser } = useUserData();
-  const { userCategoryData } = useUserCategoryData();
+  // const { userCategoryData } = useUserCategoryData();
 
   // Local state for category selection and search keyword
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [isSearchBarOpen, setSearchBarOpen] = useState<boolean>(false);
+
+  // const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string>("");
-  const [popoverOpen, setPopoverOpen] = useState(false);
+  // const [popoverOpen, setPopoverOpen] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false); // State for mobile menu
 
   const debouncedKeyword = useDebounce(keyword, 500); // Debouncing search
   const fetchProductNames = useCallback(async () => {
     try {
-      const res = await getProductNames(
-        selectedCategory || "",
-        debouncedKeyword
-      );
+      // const res = await getProductNames(
+      //   // selectedCategory || "",
+      //   debouncedKeyword
+      // );
+      const res = await getProductNames(debouncedKeyword);
       setSearchResult(res.data);
     } catch (error) {
       console.error(error);
     }
-  }, [debouncedKeyword, selectedCategory]);
+  }, [debouncedKeyword]);
 
   const handleLogout = async () => {
     try {
@@ -82,31 +61,31 @@ function Navbar() {
     if (debouncedKeyword.length > 1) {
       fetchProductNames();
     }
-  }, [debouncedKeyword, fetchProductNames, selectedCategory]);
+  }, [debouncedKeyword, fetchProductNames]);
 
   // Memoize category list for optimization
-  const categoryList = useMemo(() => {
-    return userCategoryData?.map((category) => (
-      <CommandItem
-        key={category._id}
-        value={category._id}
-        onSelect={(currentValue) => {
-          setSelectedCategory(
-            currentValue === selectedCategory ? null : currentValue
-          );
-          setPopoverOpen(false);
-        }}
-      >
-        <span>{category.name}</span>
-        <Check
-          className={cn(
-            "ml-auto",
-            selectedCategory === category._id ? "opacity-100" : "opacity-0"
-          )}
-        />
-      </CommandItem>
-    ));
-  }, [userCategoryData, selectedCategory]);
+  // const categoryList = useMemo(() => {
+  //   return userCategoryData?.map((category) => (
+  //     <CommandItem
+  //       key={category._id}
+  //       value={category._id}
+  //       onSelect={(currentValue) => {
+  //         setSelectedCategory(
+  //           currentValue === selectedCategory ? null : currentValue
+  //         );
+  //         setPopoverOpen(false);
+  //       }}
+  //     >
+  //       <span>{category.name}</span>
+  //       <Check
+  //         className={cn(
+  //           "ml-auto",
+  //           selectedCategory === category._id ? "opacity-100" : "opacity-0"
+  //         )}
+  //       />
+  //     </CommandItem>
+  //   ));
+  // }, [userCategoryData, selectedCategory]);
 
   // Event handler for search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,15 +109,26 @@ function Navbar() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleSearchResultClick = (result: string) => {
+    router.push(`/search/keyword/${result}`);
+    setSearchBarOpen(false);
+  };
+
   return (
     <nav className="w-full h-[10vh] px-5 md:px-16 border border-[#808080] border-opacity-20 py-4 flex items-center justify-between">
       <h1
         onClick={() => router.push("/")}
-        className="font-italiana font-bold text-2xl md:text-3xl tracking-widest cursor-pointer"
+        className={`font-italiana ${
+          isSearchBarOpen ? "hidden" : "block"
+        } font-bold text-2xl md:text-3xl tracking-widest cursor-pointer`}
       >
         Nuvella.com
       </h1>
-      <div className=" w-1/2 md:h-12 h-10 hidden border border-[#808080] border-opacity-50 md:flex items-center rounded-lg p-0.5">
+      <div
+        className={`sm:w-1/2 md:h-12 h-10 ${
+          isSearchBarOpen ? "block" : "hidden"
+        } border border-[#808080] border-opacity-50 md:flex items-center rounded-lg p-0.5`}
+      >
         {/* <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -174,7 +164,7 @@ function Navbar() {
             className="w-full h-full border-none "
           />
           {keyword.length > 2 && (
-            <div className="w-4/5 bg-white absolute top-12 z-20 h-96 p-2 border rounded-lg">
+            <div className="sm:w-4/5 w-[300px] bg-white absolute top-12 z-20 h-96 p-2 border rounded-lg">
               <motion.div
                 className="flex space-y-3 flex-col px-3 py-2"
                 key="results-container"
@@ -186,7 +176,13 @@ function Navbar() {
                 <p className="font-semibold">Results</p>
                 {searchResult.length > 0 ? (
                   searchResult.map((result, index) => (
-                    <p onClick={() => (router.push(`/search/keyword/${result}`))} className="cursor-pointer" key={index}>{result}</p>
+                    <p
+                      onClick={() => handleSearchResultClick(result)}
+                      className="cursor-pointer hover:bg-gray-200"
+                      key={index}
+                    >
+                      {result}
+                    </p>
                   ))
                 ) : (
                   <div>No results</div>
@@ -194,15 +190,19 @@ function Navbar() {
               </motion.div>
             </div>
           )}
-          
         </div>
         {keyword.length > 2 && (
-          <X className="cursor-pointer" onClick={() => setKeyword("")} />
+          <X
+            className="cursor-pointer hidden sm:block"
+            onClick={() => setKeyword("")}
+          />
         )}
-        
       </div>
       <div className="flex items-center gap-7">
-        <Search className="text-[#808080] md:hidden" />
+        <Search
+          onClick={() => setSearchBarOpen(!isSearchBarOpen)}
+          className="text-[#808080] md:hidden"
+        />
         <ShoppingCart
           onClick={() => router.push("/cart")}
           className="text-[#808080] cursor-pointer"

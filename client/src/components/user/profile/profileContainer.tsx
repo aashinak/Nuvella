@@ -86,7 +86,7 @@ function ProfileContainer() {
     maxFiles: 1,
   });
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async (data: z.infer<typeof profileSchema>) => {
     setIsUpdating(true);
     toast({
       title: "Updating...",
@@ -109,7 +109,7 @@ function ProfileContainer() {
         title: "Success",
         description: "Profile updated successfully!",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update profile.",
@@ -140,8 +140,6 @@ function ProfileContainer() {
   return (
     <div className="w-full min-h-[90vh] flex justify-center">
       <ScrollArea className="lg:w-1/2 md:w-3/4 w-full md:border h-[90vh] md:h-[85vh] rounded-lg md:mt-5 shadow-md p-6 flex flex-col overflow-y-auto">
-
-
         <h1 className="text-2xl font-semibold mb-4">Profile</h1>
         <div className="flex flex-col items-center mb-6">
           <div className="w-24 h-24 relative mb-2">
@@ -292,8 +290,6 @@ function ProfileContainer() {
             </div>
           </form>
         </Form>
-
-
       </ScrollArea>
     </div>
   );

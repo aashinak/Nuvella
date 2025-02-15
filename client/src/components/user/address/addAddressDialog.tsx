@@ -14,7 +14,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUserAddress, editUserAddress } from "@/api/user/userData/userData";
+import {
+  createUserAddress,
+  editUserAddress,
+} from "@/api/user/userData/userData";
 import IUserAddress from "@/entities/user/IUserAddress";
 
 // Define the validation schema
@@ -76,7 +79,7 @@ function AddAddressDialog({
     setLoading(true);
     try {
       if (initialData) {
-        await editUserAddress(data, initialData._id as string)
+        await editUserAddress(data, initialData._id as string);
       } else {
         await createUserAddress(data);
       }
@@ -97,6 +100,7 @@ function AddAddressDialog({
         description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
+      console.log(error);
     } finally {
       setLoading(false);
     }

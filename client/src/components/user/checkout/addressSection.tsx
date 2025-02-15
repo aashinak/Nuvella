@@ -1,51 +1,42 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import { getUserAddresses } from "@/api/user/product/product";
-import { useUserData } from "@/store/user/hooks/useUserData";
 import IUserAddress from "@/entities/user/IUserAddress";
 import { useUserOrder } from "@/store/user/hooks/useUserOrder";
 import AddAddressDialog from "../address/addAddressDialog";
 
 interface Props {
   setPaymentButtonActive: (active: boolean) => void;
-  setSelectedAddressId: (address: string) => void;
+  // setSelectedAddressId: (address: string) => void;
 }
 
 const DeliveryAddressSection: React.FC<Props> = ({
   setPaymentButtonActive,
-  setSelectedAddressId,
+  // setSelectedAddressId,
 }) => {
   const { updateAddress, orderItems } = useUserOrder();
-  const { userData } = useUserData();
   const [addresses, setAddresses] = useState<IUserAddress[]>([]);
-  const [isDialogOpen, setDialogOpen] = useState(false);
-  const [newAddress, setNewAddress] = useState<IUserAddress>({
-    address_line1: "",
-    address_line2: "",
-    city: "",
-    postal_code: "",
-    state: "",
-    phone: "",
-  });
+  // const [isDialogOpen, setDialogOpen] = useState(false);
+  // const [newAddress, setNewAddress] = useState<IUserAddress>({
+  //   address_line1: "",
+  //   address_line2: "",
+  //   city: "",
+  //   postal_code: "",
+  //   state: "",
+  //   phone: "",
+  // });
 
   const fetchAddress = useCallback(async () => {
     try {
-      const res = await getUserAddresses(userData?._id as string);
+      const res = await getUserAddresses();
       const data: IUserAddress[] = res.data;
       setAddresses(data);
     } catch (error) {
       console.error("Error fetching addresses:", error);
     }
-  }, [userData?._id]);
+  }, []);
 
   useEffect(() => {
     fetchAddress();
@@ -56,32 +47,32 @@ const DeliveryAddressSection: React.FC<Props> = ({
     updateAddress(value);
     console.log(orderItems);
 
-    setSelectedAddressId(value);
+    // setSelectedAddressId(value);
     setPaymentButtonActive(true);
   };
 
-  const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewAddress((prev) => ({ ...prev, [name]: value }));
-  };
+  // const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setNewAddress((prev) => ({ ...prev, [name]: value }));
+  // };
 
-  const handleAddAddress = async () => {
-    try {
-      const res = await addNewAddress(newAddress);
-      setAddresses((prev) => [...prev, res.data]);
-      setDialogOpen(false);
-      setNewAddress({
-        address_line1: "",
-        address_line2: "",
-        city: "",
-        postal_code: "",
-        state: "",
-        phone: "",
-      });
-    } catch (error) {
-      console.error("Error adding new address:", error);
-    }
-  };
+  // const handleAddAddress = async () => {
+  //   try {
+  //     const res = await addNewAddress(newAddress);
+  //     setAddresses((prev) => [...prev, res.data]);
+  //     setDialogOpen(false);
+  //     setNewAddress({
+  //       address_line1: "",
+  //       address_line2: "",
+  //       city: "",
+  //       postal_code: "",
+  //       state: "",
+  //       phone: "",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error adding new address:", error);
+  //   }
+  // };
 
   return (
     <div className="mb-6">

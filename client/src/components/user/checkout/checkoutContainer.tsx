@@ -7,6 +7,7 @@ import OrderItemsSection from "./orderSection";
 import PaymentDetailsSection from "./paymentSection";
 import { useUserOrder } from "@/store/user/hooks/useUserOrder";
 import IOrderItem from "@/entities/user/IOrderItem";
+import IProduct from "@/entities/user/IProduct";
 
 function CheckoutContainer() {
   const { resetOrder, addOrderItems } = useUserOrder();
@@ -14,7 +15,7 @@ function CheckoutContainer() {
   const [orderItems, setOrderItems] = useState<IOrderItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [isPaymentButtonActive, setPaymentButtonActive] = useState(false);
-  const [selectedAddressId, setSelectedAddressId] = useState("");
+  // const [selectedAddressId, setSelectedAddressId] = useState("");
 
   // Fetch order items based on checkout items
   const fetchOrderItems = useCallback(async () => {
@@ -24,7 +25,7 @@ function CheckoutContainer() {
     try {
       const res = await getCheckoutItemsByIds(checkoutItems);
       const updatedData = res.data.map(
-        (item: { productId: any; size: string }) => ({
+        (item: { productId: IProduct; size: string }) => ({
           product: item.productId,
           size: item.size,
           quantity: 1,
@@ -83,7 +84,7 @@ function CheckoutContainer() {
         <h1 className="text-2xl font-semibold text-gray-800">Checkout</h1>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <OrderItemsSection
-            setSelectedAddressId={setSelectedAddressId}
+            // setSelectedAddressId={setSelectedAddressId}
             setPaymentButtonActive={setPaymentButtonActive}
             orderItems={orderItems}
             loading={loading}

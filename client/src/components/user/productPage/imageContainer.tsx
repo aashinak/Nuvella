@@ -13,7 +13,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({ images }) => {
   }
 
   return (
-    <div className="w-full md:w-1/2 flex-grow gap-4 rounded-lg border p-4 flex flex-col">
+    <div className="w-full md:w-1/2 sm:min-h-[90vh] gap-4 rounded-lg border p-4 flex flex-col">
       {/* Main Image */}
       <div className="w-full h-96  lg:h-4/5 border rounded-md relative">
         <Image

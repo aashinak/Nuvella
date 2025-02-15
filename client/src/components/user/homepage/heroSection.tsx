@@ -30,7 +30,7 @@ const SkeletonCarousel = () => (
 function HeroSection() {
   const [bannerData, setBannerData] = useState<IBanner[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
   const plugin = React.useRef(
     Autoplay({ delay: 8000, stopOnInteraction: false })
   );
@@ -102,8 +102,8 @@ function HeroSection() {
         <Carousel
           plugins={[plugin.current]}
           aria-label="Hero Banner Carousel"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
+          // onMouseEnter={() => setIsHovered(true)}
+          // onMouseLeave={() => setIsHovered(false)}
         >
           <CarouselContent>{carouselItems}</CarouselContent>
         </Carousel>

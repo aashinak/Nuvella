@@ -1,19 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { getNewProducts } from "@/api/user/product/product";
 
 interface Props {
   setSelectedDeal: (index: number) => void;
 }
 
 const SelectionBar: React.FC<Props> = ({ setSelectedDeal }) => {
-  const options = ["New Arrivals", "Top Discounted", "Most Sold"];
+  const options = ["New Arrivals", "Most Sold"];
   const [selected, setSelected] = useState(0);
 
-  
-
   const handleClick = (index: number) => {
-    setSelected(index); // Update selected state
+    setSelected(index);
     setSelectedDeal(index);
   };
 

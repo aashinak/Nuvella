@@ -7,16 +7,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeliveryAddressSection from "./addressSection";
-import IProduct from "@/entities/user/IProduct";
+// import IProduct from "@/entities/user/IProduct";
 import IOrderItem from "@/entities/user/IOrderItem";
 // import DeliveryAddressSection from "./DeliveryAddressSection";
 
-interface OrderItem {
-  productId: IProduct;
-  size: string;
-  quantity: number;
-  index: number;
-}
+// interface OrderItem {
+//   productId: IProduct;
+//   size: string;
+//   quantity: number;
+//   index: number;
+// }
 
 interface Props {
   setPaymentButtonActive: (active: boolean) => void;
@@ -24,7 +24,7 @@ interface Props {
   loading: boolean;
   updateQuantity: (index: number, quantity: number) => void;
   totalPrice: number;
-  setSelectedAddressId: (address: string) => void;
+  // setSelectedAddressId: (address: string) => void;
 }
 
 const OrderItemsSection: React.FC<Props> = ({
@@ -32,7 +32,7 @@ const OrderItemsSection: React.FC<Props> = ({
   loading,
   updateQuantity,
   setPaymentButtonActive,
-  setSelectedAddressId,
+  // setSelectedAddressId,
 }) => {
   const handleDropdown = (item: IOrderItem, index: number) => {
     const stock = item.product.sizes?.find(
@@ -57,7 +57,7 @@ const OrderItemsSection: React.FC<Props> = ({
           <>
             <DeliveryAddressSection
               setPaymentButtonActive={setPaymentButtonActive}
-              setSelectedAddressId={setSelectedAddressId}
+              // setSelectedAddressId={setSelectedAddressId}
             />
             <div>
               <h2 className="text-lg font-medium text-gray-700 mb-2">

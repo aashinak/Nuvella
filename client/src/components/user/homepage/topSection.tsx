@@ -1,15 +1,21 @@
 "use client";
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 import InitiateSignup from "./dialogs/signup/initiateSignup";
 import UserLoginDialog from "./dialogs/login";
 import { useUserData } from "@/store/user/hooks/useUserData";
+import { usePathname } from "next/navigation";
 
 function TopSection() {
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
   const { isLoggedIn } = useUserData();
+  const pathname = usePathname();
+
+  // Only render on the home page (`/`)
+  if (pathname !== "/") return null;
 
   return (
     <AnimatePresence>

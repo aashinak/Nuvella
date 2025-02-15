@@ -8,10 +8,43 @@ import { useUserData } from "@/store/user/hooks/useUserData";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation"; // Import from next/navigation
 
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
+  }
+}
+interface RazorpayOptions {
+  key: string;
+  amount: number;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  prefill: {
+    name: string;
+    email: string;
+    contact: string;
+  };
+  theme: {
+    color: string;
+  };
+}
+
+interface RazorpayInstance {
+  open: () => void;
+}
+
 interface Props {
   orderItemsData: IOrderItem[];
   totalPrice: number;
   isPaymentButtonActive: boolean;
+}
+
+interface RazorpayResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
 }
 
 const PaymentDetailsSection: React.FC<Props> = ({
@@ -60,7 +93,7 @@ const PaymentDetailsSection: React.FC<Props> = ({
 
     try {
       const res = await createOrderItems(orderItems);
-      const orderItemsId = res.items.map((item) => item._id);
+      const orderItemsId = res.items.map((item: IOrderItem) => item._id);
 
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID as string,
@@ -69,7 +102,7 @@ const PaymentDetailsSection: React.FC<Props> = ({
         name: "Nuvella",
         description: "Test Transaction",
         order_id: res.paymentData.id,
-        handler: async (response: any) => {
+        handler: async (response: RazorpayResponse) => {
           const orderData: IExtendedOrder = {
             address: address ?? "",
             customerId: userData?._id ?? "",

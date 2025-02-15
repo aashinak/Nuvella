@@ -35,7 +35,7 @@ function AddressCard({ address, onChange }: AddressCardProps) {
     }
   }, [address._id, onChange, toast]);
 
-  const handleEdit = useCallback(async () => {}, []);
+  // const handleEdit = useCallback(async () => {}, []);
   return (
     <div className="border h-44 shadow-sm rounded-lg p-4 bg-white justify-between flex flex-col space-y-4">
       <div className="space-y-1">

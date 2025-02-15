@@ -21,6 +21,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
+import IOrderItem from "@/entities/user/IOrderItem";
+import IUserAddress from "@/entities/user/IUserAddress";
 // import { useToast } from "@/components/ui/use-toast";
 
 function OrderDetailsContainer({ orderId }: { orderId: string }) {
@@ -41,6 +43,8 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
       const data: IOrder = res.orders;
       setOrder(data);
     } catch (err) {
+      console.log(err);
+
       setError("Failed to fetch order details. Please try again later.");
     } finally {
       setIsLoading(false);
@@ -78,6 +82,7 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
         description: "An error occurred. Please try again.",
         variant: "destructive",
       });
+      console.log(error);
     } finally {
       setIsCancelDialogOpen(false);
     }
@@ -126,10 +131,10 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
             year: "numeric",
           })}
         </p>
+
         {/* Refund Section */}
-        {order.refundId && (
+        {order?.refundId && (
           <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-           
             <p className="text-yellow-700">Refund ID: {order?.refundId}</p>
             <p className="text-yellow-700">
               Your refund has been initiated. It may take 5-7 business days to
@@ -137,6 +142,7 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
             </p>
           </div>
         )}
+
         {/* Order Items */}
         <div className="grid md:grid-cols-2 gap-4 mt-8">
           {order?.orderItems.map((item, index) => (
@@ -147,21 +153,35 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
               <div className="flex items-center space-x-4">
                 <div className="w-20 h-20 relative rounded-lg overflow-hidden">
                   <Image
-                    src={item.productDetails.images[0]}
-                    alt={item.productDetails.name}
+                    src={
+                      typeof item === "object"
+                        ? item.productDetails?.images[0] || ""
+                        : ""
+                    }
+                    alt={
+                      typeof item === "object"
+                        ? item.productDetails?.name || ""
+                        : ""
+                    }
                     layout="fill"
                     objectFit="cover"
                   />
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold">
-                    {item.productDetails.name}
+                    {(item as IOrderItem).productDetails?.name}
                   </h3>
-                  <p className="text-gray-500 text-sm">Size: {item.size}</p>
-                  <p className="text-gray-500 text-sm">Qty: {item.quantity}</p>
+                  <p className="text-gray-500 text-sm">
+                    Size: {(item as IOrderItem).size}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    Qty: {(item as IOrderItem).quantity}
+                  </p>
                 </div>
               </div>
-              <p className="text-lg font-semibold">₹{item.totalPrice}</p>
+              <p className="text-lg font-semibold">
+                ₹{(item as IOrderItem).totalPrice}
+              </p>
             </div>
           ))}
         </div>
@@ -170,7 +190,7 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
         <div className="p-4 mt-4 bg-gray-50 rounded-lg shadow-sm border">
           <h2 className="text-xl font-semibold mb-3">Payment Details</h2>
           <p className="text-gray-600">
-            Payment Method: {order?.paymentMethod.toUpperCase()}
+            Payment Method: {order?.paymentMethod?.toUpperCase()}
           </p>
           <p className="text-gray-600">Payment ID: {order?.paymentId}</p>
           <p className="text-lg font-semibold mt-2">
@@ -182,13 +202,21 @@ function OrderDetailsContainer({ orderId }: { orderId: string }) {
         {/* Delivery Address */}
         <div className="p-4 bg-gray-50 mt-4 rounded-lg shadow-sm border">
           <h2 className="text-xl font-semibold mb-3">Delivery Address</h2>
-          <p className="text-gray-600">{order?.address.address_line1}</p>
-          <p className="text-gray-600">{order?.address.address_line2}</p>
           <p className="text-gray-600">
-            {order?.address.city}, {order?.address.state} -{" "}
-            {order?.address.postal_code}
+            {(order?.address as IUserAddress)?.address_line1 ||
+              "No address available"}
           </p>
-          <p className="text-gray-600">Phone: {order?.address.phone}</p>
+          <p className="text-gray-600">
+            {(order?.address as IUserAddress)?.address_line2}
+          </p>
+          <p className="text-gray-600">
+            {(order?.address as IUserAddress).city},{" "}
+            {(order?.address as IUserAddress).state} -{" "}
+            {(order?.address as IUserAddress).postal_code}
+          </p>
+          <p className="text-gray-600">
+            Phone: {(order?.address as IUserAddress).phone}
+          </p>
         </div>
 
         {/* Cancel Button */}

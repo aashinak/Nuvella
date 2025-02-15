@@ -1,6 +1,7 @@
 import { addToCart } from "@/api/user/product/product";
 import { Button } from "@/components/ui/button";
 import IProduct from "@/entities/user/IProduct";
+import IProductDiscount from "@/entities/user/IProductDiscount";
 import { useToast } from "@/hooks/use-toast";
 import { useUserData } from "@/store/user/hooks/useUserData";
 import { IndianRupeeIcon } from "lucide-react";
@@ -18,13 +19,14 @@ const ProductDetailsContainer: React.FC<ProductDetailsContainerProps> = ({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const handleAddToCartClick = async () => {
     try {
-      const res = await addToCart(
+      await addToCart(
         userData?._id as string,
         product._id as string,
         selectedSize as string
       );
-      console.log(res);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSizeSelect = (size: string) => {
@@ -58,8 +60,8 @@ const ProductDetailsContainer: React.FC<ProductDetailsContainerProps> = ({
           <div className="bg-yellow-100 text-yellow-800 text-sm font-semibold px-3 py-1 rounded-full whitespace-nowrap w-fit">
             <span className="mr-2">🎉</span>{" "}
             {/* Optional: Add an emoji or icon */}
-            {product.discountId.name} get upto{" "}
-            {product.discountId.discount_percentage}% off
+            {(product.discountId as IProductDiscount).name} get upto{" "}
+            {(product.discountId as IProductDiscount).discount_percentage}% off
           </div>
         )}
         <h2 className="font-semibold">Select Size</h2>

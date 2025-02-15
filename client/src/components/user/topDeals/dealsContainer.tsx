@@ -13,16 +13,17 @@ function DealsContainer() {
     try {
       if (selectedDeal === 0) {
         const res = await getNewProducts();
-        console.log(res);
         const data: IProduct[] = res.products;
         setProducts(data);
-      } else if(selectedDeal === 2) {
+      } else if(selectedDeal === 1) {
         const res = await getTopSellingProducts();
-        console.log(res);
         const data: IProduct[] = res.products;
         setProducts(data);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      
+    }
   }, [selectedDeal]);
 
   useEffect(() => {
