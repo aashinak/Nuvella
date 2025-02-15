@@ -6,7 +6,7 @@ interface PageProps {
 }
 
 async function Page({ params }: PageProps) {
-  const { productId } = await params; // Awaiting params as required
+  const { productId } = params;
 
   return <ProductPageContainer productId={productId} />;
 }
