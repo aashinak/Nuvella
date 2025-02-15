@@ -5,9 +5,10 @@ export default interface IProduct {
   name: string;
   description: string;
   images: string[];
-  price: string;
+  price: number;
   categoryId: string;
   stock: number;
   sizes?: { size: string; stock: number }[];
   discountId: IProductDiscount | string;
+  discountedPrice?: number;
 }

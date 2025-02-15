@@ -19,8 +19,8 @@ export const userRegistrationValidationRules = [
 
   body("lastname")
     .optional()
-    .isAlpha()
-    .withMessage("Last name must only contain alphabetic characters")
+    .matches(/^[A-Za-z\s]+$/)
+    .withMessage("Last name must only contain alphabetic characters and spaces")
     .isLength({ min: 2, max: 15 })
     .withMessage("Last name must be between 2 and 15 characters"),
 

@@ -11,7 +11,7 @@ import hashOtp from "../../../../utils/hashOtp";
 import hashService from "../../../../utils/hashService";
 import logger from "../../../../utils/logger";
 import emailFormat from "../../../../utils/otpEmailFormat";
-import sanitizeData from '../../../../utils/sanitizeDataInput'
+import sanitizeData from "../../../../utils/sanitizeDataInput";
 
 const userRegistration = async (userData: Partial<IUser>) => {
   let { email, avatar, username, password, lastname, firstname, phone } =
@@ -37,6 +37,7 @@ const userRegistration = async (userData: Partial<IUser>) => {
     if (avatar) {
       await cleanUpAvatar(avatar);
     }
+    await redisClient.del(key);
     logger.warn(`User with username ${username} already exists`);
     throw new ApiError(400, `User with username ${username} already exists`);
   }
@@ -47,6 +48,7 @@ const userRegistration = async (userData: Partial<IUser>) => {
     if (avatar) {
       await cleanUpAvatar(avatar);
     }
+    await redisClient.del(key);
     logger.warn(`User with email ${email} already exists`);
     throw new ApiError(400, `User with email ${email} already exists`);
   }
@@ -59,6 +61,7 @@ const userRegistration = async (userData: Partial<IUser>) => {
       await cleanUpAvatar(avatar);
     } catch (error: any) {
       await cleanUpAvatar(avatar);
+      await redisClient.del(key);
       logger.error(`Failed to upload avatar for ${email}: ${error.message}`);
       throw new ApiError(500, "Failed to upload avatar");
     }
@@ -98,12 +101,17 @@ const userRegistration = async (userData: Partial<IUser>) => {
 
   const savedUser = await userRepository.createUser(newUser);
   if (!savedUser) {
+    await redisClient.del(key);
     throw new ApiError(500, "User registration failed");
   }
 
   // Save OTP to database
   if (savedUser._id) {
-    await userOtpRepository.saveOtp(savedUser._id, hashedOtp, "USER_REGISTRATION");
+    await userOtpRepository.saveOtp(
+      savedUser._id,
+      hashedOtp,
+      "USER_REGISTRATION"
+    );
   }
 
   // Send verification email

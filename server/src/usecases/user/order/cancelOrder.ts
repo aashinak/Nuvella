@@ -45,11 +45,11 @@ const cancelOrder = async (orderId: string, userId: string) => {
     }
   );
 
-  await orderRepository.updateOrder(orderId, { refundId: refund.id });
-
   const cacheKey1 = `order:${userId}:${orderId}`;
   const cacheKey2 = `orders:${userId}`;
   const cacheKey3 = `cart:${userId}`;
+
+  await orderRepository.updateOrder(orderId, { refundId: refund.id });
 
   await Promise.all([
     redisClient.del(cacheKey1),

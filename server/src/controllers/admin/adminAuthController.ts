@@ -41,8 +41,8 @@ export const adminLoginController = async (
   if (!errors.isEmpty()) {
     validationErrorHandler(errors.array());
   }
-  const { email, password } = req.body;
-  const response = await adminLogin({ email, password });
+  const { email, password, adminId } = req.body;
+  const response = await adminLogin({ email, password, adminId });
   res
     .status(200)
     .json({ message: response.message, admin: response.admin, success: true });

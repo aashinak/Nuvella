@@ -29,15 +29,24 @@ import { categoryCreationValidationRules } from "../../validators/admin/category
 import {
   createCategoryController,
   createProductController,
+  createProductsDiscountController,
   deleteCategoryController,
+  deleteProductController,
+  deleteProductsDiscountController,
+  getAllOrdersController,
   getCategoryController,
   getProductByCategoryController,
+  getProductsDiscountController,
   updateCategoryController,
 } from "../../controllers/admin/adminProductController";
 import { categoryUpdationValidationRules } from "../../validators/admin/categoryUpdateValidator";
 import { categoryDeletionValidationRules } from "../../validators/admin/categoryDeleteValidator";
 import { productValidationRules } from "../../validators/admin/productValidator";
 import { validateCategoryId } from "../../validators/admin/getProductByCategoryValidator";
+import { validateDiscountId } from "../../validators/admin/validateDiscountId";
+import { createDiscountValidation } from "../../validators/admin/discountCreateValidation";
+import { validateProductId } from "../../validators/admin/validateProductId";
+import { validateOrderQueryParams } from "../../validators/admin/validateOrderQueryParams";
 
 export const router = Router();
 
@@ -159,10 +168,49 @@ router.post(
   asyncHandler(createProductController)
 );
 
+router.delete(
+  "/deleteProduct/:productId",
+  createRateLimiter({ max: 30 }),
+  isAuthenticated,
+  validateProductId,
+  asyncHandler(deleteProductController)
+);
+
 router.get(
   "/getProductsByCategory/:categoryId",
   createRateLimiter({ max: 80 }),
   isAuthenticated,
   validateCategoryId(),
   asyncHandler(getProductByCategoryController)
+);
+
+router.get(
+  "/getProductDiscounts",
+  createRateLimiter({ max: 80 }),
+  isAuthenticated,
+  asyncHandler(getProductsDiscountController)
+);
+
+router.delete(
+  "/deleteDiscount/:discountId",
+  createRateLimiter({ max: 20 }),
+  isAuthenticated,
+  validateDiscountId(),
+  asyncHandler(deleteProductsDiscountController)
+);
+
+router.post(
+  "/createDiscount",
+  createRateLimiter({ max: 20 }),
+  isAuthenticated,
+  createDiscountValidation,
+  asyncHandler(createProductsDiscountController)
+);
+
+router.get(
+  "/getOrders",
+  createRateLimiter({ max: 80 }),
+  isAuthenticated,
+  validateOrderQueryParams,
+  asyncHandler(getAllOrdersController)
 );

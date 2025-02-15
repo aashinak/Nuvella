@@ -3,5 +3,4 @@ export default interface IProductDiscount {
   name: string;
   discount_percentage: number;
   active: boolean;
-  currentProductPrice: number;
 }
