@@ -41,7 +41,10 @@ import {
   updateUserDataController,
 } from "../../controllers/user/userDataController";
 import { isUserAuthenticated } from "../../middlewares/userAuthMiddleware";
-import { getRecentProductsController } from "../../controllers/user/productStatisticController";
+import {
+  getRecentProductsController,
+  topSellingProductsController,
+} from "../../controllers/user/productStatisticController";
 
 export const router = Router();
 
@@ -245,4 +248,10 @@ router.get(
   "/getNewProducts",
   createRateLimiter({ max: 100 }),
   asyncHandler(getRecentProductsController)
+);
+
+router.get(
+  "/topSellingProducts",
+  createRateLimiter({ max: 100 }),
+  asyncHandler(topSellingProductsController)
 );
