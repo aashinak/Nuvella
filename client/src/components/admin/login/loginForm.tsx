@@ -57,14 +57,31 @@ function LoginForm({ setIsDialogOpen, setAdminIdval, adminId }: Props) {
       setAdminIdval(res.admin._id);
       setIsDialogOpen(true); // Open OTP dialog
       setLoading(false);
-    } catch (error) {
+    } catch (error: unknown) {
       setLoading(false);
-      console.log(error);
+
+      let errorMessage = "An unexpected error occurred.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      if (typeof error === "object" && error !== null) {
+        const axiosError = error as {
+          response?: { data?: { message?: string } };
+          details?: { message?: string };
+        };
+
+        errorMessage =
+          axiosError.response?.data?.message ||
+          axiosError.details?.message ||
+          errorMessage;
+      }
 
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: error.response?.data.message || error.details.message,
+        description: errorMessage,
       });
     }
   };

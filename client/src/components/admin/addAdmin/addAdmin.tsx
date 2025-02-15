@@ -1,4 +1,3 @@
-"use client";
 import AdminForm from "./adminForm";
 
 function AddAdmin() {

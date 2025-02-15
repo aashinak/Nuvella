@@ -24,7 +24,7 @@ function AdminLoginComponent() {
         } else {
           setLoading(false); // Loading completed only when success
         }
-      } catch (error) {
+      } catch {
         // setLoading(false);
         router.push("/not-found"); // Redirect to not found page
       }

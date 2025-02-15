@@ -23,7 +23,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ data }) => {
         removeCategory(data._id);
         toast({ title: "Category deleted" });
       }
-    } catch (error) {
+    } catch {
       toast({ variant: "destructive", title: "Category deletion failed" });
     }
   }, [data._id, removeCategory, toast]);

@@ -37,7 +37,7 @@ function OtpForm({ isDialogOpen, setIsDialogOpen, adminIdval }: Props) {
     setLoading(true); // Show loading state
     try {
       const res = await adminLoginOtpVerification(adminIdval, otp);
-      setAccessToken(res.accessToken)
+      setAccessToken(res.accessToken);
       setAdminData(res.admin);
 
       toast({
@@ -51,11 +51,29 @@ function OtpForm({ isDialogOpen, setIsDialogOpen, adminIdval }: Props) {
         title: "Login successfull",
         description: "",
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      let errorMessage = "An unexpected error occurred.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      if (typeof error === "object" && error !== null) {
+        const axiosError = error as {
+          response?: { data?: { message?: string } };
+          details?: { message?: string };
+        };
+
+        errorMessage =
+          axiosError.response?.data?.message ||
+          axiosError.details?.message ||
+          errorMessage;
+      }
+
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: error.response?.data.message || error.details.message,
+        description: errorMessage,
       });
     } finally {
       setLoading(false); // Hide loading state

@@ -23,10 +23,10 @@ function AdminNavbar() {
 
   const handleLogout = async () => {
     try {
-      const res = await adminLogout();
+      await adminLogout();
       toast({ title: "Logout successfull" });
       router.push("/");
-    } catch (error) {
+    } catch  {
       toast({ title: "Logout failed" });
     }
   };

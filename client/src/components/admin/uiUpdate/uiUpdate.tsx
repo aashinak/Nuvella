@@ -24,7 +24,7 @@ function UiUpdate() {
     setIsLoading(true);
     try {
       const res = await getUiUpdates();
-      setUiData(res.data);
+      setUiData(res.data as Banner[]);
     } catch (error) {
       console.error("Error fetching UI updates:", error);
     } finally {

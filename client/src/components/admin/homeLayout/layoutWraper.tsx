@@ -1,7 +1,11 @@
-import React from "react";
+import { ReactNode } from "react";
 
-function LayoutWraper({ children }) {
-  return <div className="w-full h-screen flex flex-col ">{children}</div>;
+interface LayoutWrapperProps {
+  children: ReactNode;
 }
 
-export default LayoutWraper;
+const LayoutWrapper: React.FC<LayoutWrapperProps> = ({ children }) => {
+  return <div className="w-full h-screen flex flex-col">{children}</div>;
+};
+
+export default LayoutWrapper;

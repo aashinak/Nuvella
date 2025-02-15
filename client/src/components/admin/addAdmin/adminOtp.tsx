@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { adminCreationRequestVerification } from "@/api/admin/auth/auth";
+import { AxiosError } from "axios";
 
 interface Props {
   setIsOtpDialogOpen: (value: boolean) => void; // Function to toggle dialog open state
@@ -50,10 +51,18 @@ function OtpForm({ isOtpDialogOpen, setIsOtpDialogOpen, newAdminsId }: Props) {
       setIsOtpDialogOpen(false);
       setIsUrlDialogOpen(true);
     } catch (error) {
+      let errorMessage = "Something went wrong.";
+
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: error.response?.data.message || error.details.message,
+        description: errorMessage,
       });
     } finally {
       setLoading(false); // Hide loading state
@@ -62,12 +71,11 @@ function OtpForm({ isOtpDialogOpen, setIsOtpDialogOpen, newAdminsId }: Props) {
 
   const url = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/admin/login/${newAdminsId}`;
 
-
   return (
     <>
       {/* OTP Dialog */}
-      <AlertDialog  open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
-        <AlertDialogContent >
+      <AlertDialog open={isOtpDialogOpen} onOpenChange={setIsOtpDialogOpen}>
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               Enter the OTP sent to your email
@@ -115,44 +123,40 @@ function OtpForm({ isOtpDialogOpen, setIsOtpDialogOpen, newAdminsId }: Props) {
 
       {/* URL Dialog */}
       <AlertDialog open={isUrlDialogOpen} onOpenChange={setIsUrlDialogOpen}>
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Important: Copy this URL</AlertDialogTitle>
-      <AlertDialogDescription className="flex flex-col gap-2">
-          <span>Please copy the following URL for accessing the admin panel:</span>
-          <code
-            className="bg-gray-200 p-2 rounded mt-2 text-sm break-all overflow-auto max-h-20"
-          >
-            {url}
-          </code>
-          <span>
-            Make sure to save this URL securely, as it is required for the new
-            admin to access the panel.
-          </span>
-      </AlertDialogDescription>
-    </AlertDialogHeader>
-    <AlertDialogFooter>
-      <AlertDialogAction
-        onClick={() => {
-          navigator.clipboard.writeText(url); // Copy URL to clipboard
-          toast({
-            title: "URL copied to clipboard!",
-          });
-          setIsUrlDialogOpen(false);
-        }}
-      >
-        Copy URL
-      </AlertDialogAction>
-      <AlertDialogAction
-        onClick={() => setIsUrlDialogOpen(false)}
-        variant="secondary"
-      >
-        Close
-      </AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
-
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Important: Copy this URL</AlertDialogTitle>
+            <AlertDialogDescription className="flex flex-col gap-2">
+              <span>
+                Please copy the following URL for accessing the admin panel:
+              </span>
+              <code className="bg-gray-200 p-2 rounded mt-2 text-sm break-all overflow-auto max-h-20">
+                {url}
+              </code>
+              <span>
+                Make sure to save this URL securely, as it is required for the
+                new admin to access the panel.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                navigator.clipboard.writeText(url); // Copy URL to clipboard
+                toast({
+                  title: "URL copied to clipboard!",
+                });
+                setIsUrlDialogOpen(false);
+              }}
+            >
+              Copy URL
+            </AlertDialogAction>
+            <AlertDialogAction onClick={() => setIsUrlDialogOpen(false)}>
+              Close
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

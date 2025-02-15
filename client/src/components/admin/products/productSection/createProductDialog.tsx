@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -57,18 +57,23 @@ const formSchema = z.object({
     })
   ),
   categoryId: z.string(),
-
   discountId: z
     .string()
-    .regex(/^[0-9a-fA-F]{24}$/, "Invalid discount ID format."),
+    .regex(/^[0-9a-fA-F]{24}$/, "Invalid discount ID format.")
+    .optional(),
 });
 
 interface Props {
   isDialogOpen: boolean;
   setIsDialogOpen: (value: boolean) => void;
+  productData?: IProduct; // Optional product data for editing
 }
 
-const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
+const ProductDialog = ({
+  isDialogOpen,
+  setIsDialogOpen,
+  productData,
+}: Props) => {
   const { toast } = useToast();
   const [discountData, setDiscountData] = useState<IProductDiscount[]>([]);
   const [loading, setLoading] = useState(false);
@@ -85,13 +90,13 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      price: "",
-      stock: 0,
-      sizes: [],
-      categoryId: "",
-      discountId: undefined,
+      name: productData?.name || "",
+      description: productData?.description || "",
+      price: productData?.price.toString() || "",
+      stock: productData?.stock || 0,
+      sizes: productData?.sizes || [],
+      categoryId: productData?.categoryId || "",
+      discountId: productData?.discountId || undefined,
     },
   });
 
@@ -129,17 +134,20 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
     }));
   };
 
-  // fetch discount details
   useEffect(() => {
-    const fetchDiscount = async () => {
+    const fetchDiscountHandler = async () => {
       try {
         const response = await getProductDiscounts();
-        console.log(response);
         setDiscountData(response.data);
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
     };
-    fetchDiscount();
-  }, []);
+
+    if (isDialogOpen) {
+      fetchDiscountHandler();
+    }
+  }, [isDialogOpen]);
 
   // Update the stock field dynamically based on active sizes
   useEffect(() => {
@@ -165,10 +173,8 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
   }, [activeSizes, form]);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
-
     try {
-      if (files.length === 0) {
+      if (files.length === 0 && !productData) {
         toast({
           variant: "destructive",
           title: "Images required",
@@ -185,30 +191,35 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
       formData.append("price", values.price);
       formData.append("stock", values.stock.toString());
       formData.append("categoryId", values.categoryId);
-      formData.append("discountId", values.discountId);
-
-      console.log(activeSizes);
+      if (values.discountId) {
+        formData.append("discountId", values.discountId);
+      }
 
       if (Object.keys(activeSizes).length > 0) {
-        // Initialize an array to hold the size and stock objects
-        const sizesArray = [];
-
-        Object.entries(activeSizes).forEach(([size, stock], index) => {
-          // Add each size and stock pair to the array
-          sizesArray.push({ size, stock: stock.toString() });
-        });
-
-        // Append the stringified array of sizes to the form data
+        const sizesArray = Object.entries(activeSizes).map(([size, stock]) => ({
+          size,
+          stock: stock.toString(),
+        }));
         formData.append("sizes", JSON.stringify(sizesArray));
       }
 
       files.forEach((file) => formData.append("images", file));
 
-      const res = await createProduct(formData);
+      let res;
+      if (productData) {
+        // Update product
+        // res = await updateProduct(productData._id, formData);
+      } else {
+        // Create product
+        res = await createProduct(formData);
+      }
+
       if (res.success) {
         toast({
-          title: "Product Created",
-          description: "Product has been successfully created.",
+          title: productData ? "Product Updated" : "Product Created",
+          description: productData
+            ? "Product has been successfully updated."
+            : "Product has been successfully created.",
         });
         form.reset();
         setFiles([]);
@@ -216,13 +227,13 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
         setActiveSizes({});
         setIsDialogOpen(false);
       }
-
-      // Submit data here
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Unable to create product. Please try again.",
+        description: productData
+          ? "Unable to update product. Please try again."
+          : "Unable to create product. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -254,18 +265,23 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent className="h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Create New Product</DialogTitle>
+          <DialogTitle>
+            {productData ? "Edit Product" : "Create New Product"}
+          </DialogTitle>
           <DialogDescription>
-            Fill in the details to create a new product.
+            {productData
+              ? "Update the details of the product."
+              : "Fill in the details to create a new product."}
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="p-2  h-full">
+        <ScrollArea className="p-2 h-full">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4 p-2"
             >
+              {/* Form fields remain the same */}
               <FormField
                 control={form.control}
                 name="name"
@@ -312,9 +328,9 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select
-                      value={field.value} // Control the value of Select
+                      value={field.value}
                       onValueChange={(value) => {
-                        form.setValue("categoryId", value); // Set the value in form state
+                        form.setValue("categoryId", value);
                       }}
                     >
                       <SelectTrigger className="w-[180px]">
@@ -346,9 +362,9 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
                     <FormItem>
                       <FormLabel>Discount</FormLabel>
                       <Select
-                        value={field.value} // Control the value of Select
+                        value={field.value}
                         onValueChange={(value) => {
-                          form.setValue("discountId", value); // Set the value in form state
+                          form.setValue("discountId", value);
                         }}
                       >
                         <SelectTrigger className="w-[180px]">
@@ -431,7 +447,7 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
                       type="number"
                       placeholder="Enter stock quantity"
                       {...field}
-                      disabled={Object.keys(activeSizes).length > 0} // Disable when sizes are active
+                      disabled={Object.keys(activeSizes).length > 0}
                       onChange={(e) =>
                         field.onChange(Number(e.target.value) || 0)
                       }
@@ -516,7 +532,13 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading}>
-                  {loading ? "Creating..." : "Create Product"}
+                  {loading
+                    ? productData
+                      ? "Updating..."
+                      : "Creating..."
+                    : productData
+                    ? "Update Product"
+                    : "Create Product"}
                 </Button>
               </DialogFooter>
             </form>
@@ -527,4 +549,4 @@ const CreateProductDialog = ({ isDialogOpen, setIsDialogOpen }: Props) => {
   );
 };
 
-export default CreateProductDialog;
+export default ProductDialog;

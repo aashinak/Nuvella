@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -102,7 +101,7 @@ function CreateCategoryDialog({ isDialogOpen, setIsDialogOpen }: Props) {
       form.reset();
       setFile(null);
       setImagePreview(null);
-    } catch (error) {
+    } catch {
       toast({
         variant: "destructive",
         title: "Error creating category",

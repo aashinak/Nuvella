@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { adminCreationRequest } from "@/api/admin/auth/auth";
 import OtpForm from "./adminOtp";
+import { AxiosError } from "axios";
 
 // Validation Schema
 const formSchema = z
@@ -76,15 +78,23 @@ function AdminForm() {
         data.password
       );
       console.log(res);
-      setNewAdminsId(res.createdAdmin._id)
+      setNewAdminsId(res.createdAdmin._id);
       toast({ title: "Admin added successfully!" });
       setIsOtpDialogOpen(true);
       form.reset();
     } catch (error) {
+      let errorMessage = "Something went wrong.";
+
+      if (error instanceof AxiosError) {
+        errorMessage = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         variant: "destructive",
         title: "Error adding admin",
-        description: error.response?.data.message || error.details.message,
+        description: errorMessage,
       });
     } finally {
       setLoading(false);

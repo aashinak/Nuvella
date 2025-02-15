@@ -5,7 +5,6 @@ import CategoryCard from "./categoryCard";
 import { Button } from "@/components/ui/button";
 import CreateCategoryDialog from "./createCategoryDialog";
 import { getAllCategories } from "@/api/admin/product/product";
-import ICategory from "@/entities/ICategory";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCategoryData } from "@/store/hooks/useCategoryData";

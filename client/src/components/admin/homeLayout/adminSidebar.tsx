@@ -39,7 +39,7 @@ function AdminSidebar() {
       {/* Sidebar */}
       <div
         className={`h-full transition-all duration-300 ease-in-out   flex flex-col ${
-          isOpen ? "w-60 px-4 py-6" : "w-16 px-2 py-4"
+          isOpen ? "w-60 px-4 py-6" : "w-16 px-2 py-6"
         }`}
       >
         <nav className="flex flex-col gap-3">

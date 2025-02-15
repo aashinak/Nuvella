@@ -17,7 +17,6 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -28,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { setUiUpdates } from "@/api/admin/ui/uiUpdates";
 import { Banner } from "./uiUpdate";
+import { AxiosError } from "axios";
 
 // Validation Schema
 const formSchema = z.object({
@@ -51,7 +51,11 @@ interface Props {
   setUiData: React.Dispatch<React.SetStateAction<Banner[]>>;
 }
 
-function BannerCreateDialog({ isDialogOpen, setIsDialogOpen, setUiData }: Props) {
+function BannerCreateDialog({
+  isDialogOpen,
+  setIsDialogOpen,
+  setUiData,
+}: Props) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [heroImage, setHeroImage] = useState<File | null>(null);
@@ -101,22 +105,31 @@ function BannerCreateDialog({ isDialogOpen, setIsDialogOpen, setUiData }: Props)
         subText2: values.subText2,
       });
       console.log(res);
-      setUiData(res.data)
-      
+      setUiData(res.data as Banner[]);
+
       console.log(values);
       console.log(heroImage);
       setIsDialogOpen(false);
       setLoading(false);
-      form.reset()
-      setHeroImage(null)
-      setImagePreview(null)
-    } catch (error) {
+      form.reset();
+      setHeroImage(null);
+      setImagePreview(null);
+    } catch (error: unknown) {
       setLoading(false);
       console.error(error);
+
+      let errorMessage = "An unexpected error occurred.";
+
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: error.response?.data.message || error.message,
+        description: errorMessage,
       });
     }
   };

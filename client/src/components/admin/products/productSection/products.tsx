@@ -9,16 +9,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import CreateProductDialog from "./createProductDialog";
+// import CreateProductDialog from "./categorySection/createProductDialog";
 import { useCategoryData } from "@/store/hooks/useCategoryData";
 import { useAdminProductData } from "@/store/hooks/useAdminProductData";
 import { getProductByCategory } from "@/api/admin/product/product";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import CreateProductDialog from "./createProductDialog";
 
 function Products() {
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -28,13 +29,13 @@ function Products() {
   const fetchProductData = useCallback(
     async (categoryId: string) => {
       setIsLoading(true);
-      setError(null);
+      // setError(null);
       try {
         const res = await getProductByCategory(categoryId);
         setAdminProduct(res.data);
       } catch (error) {
         console.error("Error fetching products:", error);
-        setError("Failed to load products. Please try again.");
+        // setError("Failed to load products. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -91,37 +92,42 @@ function Products() {
           />
         </div>
         {/* <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3 gap-4"> */}
-          {isLoading ? (
-            <div className="w-full h-min">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                <Skeleton className="border w-full h-32 rounded-md" />
-                <Skeleton className="border w-full h-32 rounded-md" />
-                <Skeleton className="border w-full h-32 rounded-md" />
-                <Skeleton className="border w-full h-32 rounded-md" />
-              </div>
+        {isLoading ? (
+          <div className="w-full h-min">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              <Skeleton className="border w-full h-32 rounded-md" />
+              <Skeleton className="border w-full h-32 rounded-md" />
+              <Skeleton className="border w-full h-32 rounded-md" />
+              <Skeleton className="border w-full h-32 rounded-md" />
             </div>
-          ) : adminProductData && adminProductData.length > 0 ? (
-            <div className="rounded-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4">
-              <AnimatePresence>
-                {adminProductData.map((product) => (
-                  <motion.div
-                    key={product._id}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    transition={{ duration: 0.3 }}
-                    layout
-                  >
-                    <ProductCard data={product} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <p className="text-gray-500 text-center mt-5">
-              No products found. Create one to get started!
-            </p>
-          )}
+          </div>
+        ) : adminProductData && adminProductData.length > 0 ? (
+          <div className="rounded-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-4">
+            <AnimatePresence>
+              {adminProductData.map((product) => (
+                <motion.div
+                  key={product._id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.3 }}
+                  layout
+                >
+                  <ProductCard
+                    fetchProductData={() =>
+                      fetchProductData(selectedCategory as string)
+                    }
+                    data={product}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <p className="text-gray-500 text-center mt-5">
+            No products found. Create one to get started!
+          </p>
+        )}
         {/* </div> */}
       </div>
     </div>

@@ -36,11 +36,11 @@ const ExistingBanners: React.FC<ExistingBannersProps> = ({
   const handleDelete = async () => {
     try {
 
-      const res = await uiUpdateDelete(updateId);
+       await uiUpdateDelete(updateId);
       toast({ title: "Successfully deleted banner" });
       setUiData((prev: Banner[]) => prev.filter((banner) => banner.id !== updateId));
       
-    } catch (error) {
+    } catch {
       toast({ variant: "destructive", title: "Banner deletion failed" });
     }
   };
