@@ -1,3 +1,5 @@
+import IProductDiscount from "../IProductDiscount";
+
 export default interface IProduct {
   _id?: string;
   name: string;
@@ -11,6 +13,6 @@ export default interface IProduct {
   };
   stock: number;
   sizes: { size: string; stock: number }[];
-  discountId?: string;
+  discountId?: string | IProductDiscount;
   discountedPrice?: string
 }

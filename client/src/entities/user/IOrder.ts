@@ -1,10 +1,13 @@
+import IOrderItem from "./IOrderItem";
+import IUserAddress from "./IUserAddress";
+
 export default interface IOrder {
   _id?: string;
   orderId?: number;
   totalAmount?: number;
   customerId: string;
-  orderItems: string[];
-  address: string;
+  orderItems: string[] | IOrderItem[];
+  address: string | IUserAddress;
   status?: string;
   paymentId?: string;
   createdAt?: string;

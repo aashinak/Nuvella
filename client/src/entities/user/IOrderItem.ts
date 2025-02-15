@@ -6,6 +6,7 @@ export default interface IOrderItem {
   quantity: number;
   size?: string;
   totalPrice?: number;
+  productDetails? : IProduct
 }
 
 export interface IMinimalOrderItem {
