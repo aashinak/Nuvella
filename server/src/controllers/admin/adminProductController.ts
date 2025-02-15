@@ -11,6 +11,8 @@ import getProductByCategory from "../../usecases/admin/productManagement/categor
 import viewAllDiscounts from "../../usecases/admin/productManagement/discount/viewAllDiscounts";
 import deleteDiscount from "../../usecases/admin/productManagement/discount/deleteDiscount";
 import createDiscount from "../../usecases/admin/productManagement/discount/createDiscount";
+import deleteProduct from "../../usecases/admin/productManagement/product/deleteProduct";
+import getAllOrders from "../../usecases/admin/productManagement/order/getAllOrders";
 
 //-------------------- Category Controllers ---------------------------
 
@@ -159,6 +161,26 @@ export const createProductController = async (
   });
 };
 
+export const deleteProductController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    validationErrorHandler(errors.array());
+  }
+
+  const { productId } = req.params;
+  const response = await deleteProduct(productId);
+  if (!response) throw new ApiError(500, "Couldnt delete product");
+  res.status(200).json({
+    message: response.message,
+    success: true,
+  });
+};
+
 export const getProductByCategoryController = async (
   req: Request,
   res: Response,
@@ -239,6 +261,41 @@ export const createProductsDiscountController = async (
   res.status(200).json({
     message: response.message,
     discount: response.discount,
+    success: true,
+  });
+};
+
+export const getAllOrdersController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    validationErrorHandler(errors.array());
+  }
+
+  const pageIndex = parseInt(req.query.pageIndex as string) || 1;
+  const filterCondition =
+    (req.query.filterCondition as "today" | "month" | "year") || "today";
+
+  const monthNumber = req.query.month
+    ? parseInt(req.query.month as string)
+    : undefined; // Optional
+  const year = req.query.year ? parseInt(req.query.year as string) : undefined; // Optional
+
+  const response = await getAllOrders(
+    pageIndex,
+    filterCondition,
+    monthNumber,
+    year
+  );
+  
+  if (!response) throw new ApiError(500, "Couldnt fetch orders");
+  res.status(200).json({
+    message: response.message,
+    orders: response.orders,
     success: true,
   });
 };
