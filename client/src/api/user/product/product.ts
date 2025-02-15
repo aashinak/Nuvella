@@ -1,27 +1,14 @@
+import handleAxiosError from "@/api/handleAxiosError";
 import userAxiosInstance from "@/axios/userAxiosInstance";
 import { IExtendedOrder } from "@/entities/user/IOrder";
 import { IMinimalOrderItem } from "@/entities/user/IOrderItem";
-
-// Utility function for logging errors
-const logError = (error: any) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.error("Detailed Error:", error);
-  } else {
-    console.error("An error occurred.");
-  }
-};
 
 export const getCategories = async () => {
   try {
     const response = await userAxiosInstance.get("/user/getCategories");
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch categories.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch categories.");
   }
 };
 
@@ -34,19 +21,16 @@ export const getProductByCategory = async (
       `/user/search/category?categoryId=${categoryId}&pageIndex=${pageIndex}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch products.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch products.");
   }
 };
 
 export const getProductNames = async (
+  searchKey: string,
   categoryId: string = "",
-  searchKey: string
+  
+
 ) => {
   try {
     const url =
@@ -56,13 +40,8 @@ export const getProductNames = async (
 
     const response = await userAxiosInstance.get(url);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch product names.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch product names.");
   }
 };
 
@@ -75,13 +54,8 @@ export const searchProductsByKeyword = async (
 
     const response = await userAxiosInstance.get(url);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch products.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch products.");
   }
 };
 
@@ -91,13 +65,8 @@ export const getProductById = async (productId: string) => {
       `/user/getProductById/${productId}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch product data.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch product data.");
   }
 };
 
@@ -114,13 +83,8 @@ export const addToCart = async (
       size,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to add item to cart.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to add item to cart.");
   }
 };
 
@@ -130,13 +94,8 @@ export const getAllCartItems = async (userId: string) => {
       `/user/getAllCartItems/${userId}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch cart items.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch cart items.");
   }
 };
 
@@ -144,13 +103,8 @@ export const clearCart = async () => {
   try {
     const response = await userAxiosInstance.delete(`/user/clearCartItem`);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to clear cart items.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to clear cart items.");
   }
 };
 
@@ -160,13 +114,8 @@ export const removeCartItem = async (cartId: string) => {
       `/user/removeCartItem/${cartId}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to remove cart item.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to remove cart item.");
   }
 };
 //////////////
@@ -178,12 +127,8 @@ export const getOrderItemsByIds = async (ids: string[], userId: string) => {
       userId,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    throw {
-      message: "Failed to fetch products.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch products.");
   }
 };
 
@@ -194,27 +139,17 @@ export const getCheckoutItemsByIds = async (ids: string[]) => {
       `/user/checkoutItems/${encodedIds}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to fetch products.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch products.");
   }
 };
 
-export const getUserAddresses = async (userId: string) => {
+export const getUserAddresses = async () => {
   try {
     const response = await userAxiosInstance.get(`/user/getUserAddresses`);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to fetch addresses.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch addresses.");
   }
 };
 
@@ -226,13 +161,8 @@ export const createOrderItems = async (orderItems: IMinimalOrderItem[]) => {
       orderItems,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to create order items.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to create order items.");
   }
 };
 
@@ -242,13 +172,8 @@ export const createOrder = async (orderData: IExtendedOrder) => {
       orderData,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to create order.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to create order.");
   }
 };
 
@@ -258,27 +183,17 @@ export const cancelOrder = async (orderId: string) => {
       `/user/cancelOrder/${orderId}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to cancel order.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to cancel order.");
   }
 };
 
-export const getOrders = async (userId: string) => {
+export const getOrders = async () => {
   try {
     const response = await userAxiosInstance.get(`/user/getOrders`);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to fetch orders.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch orders.");
   }
 };
 
@@ -288,13 +203,8 @@ export const getOrder = async (orderDocId: string) => {
       `/user/getOrder/${orderDocId}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to fetch order.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch order.");
   }
 };
 
@@ -302,13 +212,8 @@ export const getNewProducts = async () => {
   try {
     const response = await userAxiosInstance.get(`/user/getNewProducts`);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to fetch products.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch products.");
   }
 };
 
@@ -316,12 +221,7 @@ export const getTopSellingProducts = async () => {
   try {
     const response = await userAxiosInstance.get(`/user/topSellingProducts`);
     return response.data;
-  } catch (error: any) {
-    logError(error);
-
-    throw {
-      message: "Failed to fetch products.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch products.");
   }
 };

@@ -1,147 +1,137 @@
+import handleAxiosError from "@/api/handleAxiosError";
 import axiosAdminInstance from "@/axios/adminAxiosIntance";
-import ICategory from "@/entities/ICategory";
-import IProduct from "@/entities/IProduct";
-import IProductDiscount from "@/entities/IProductDiscount";
 
-// Utility function for logging errors
-const logError = (error: any) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.error("Detailed Error:", error);
-  } else {
-    console.error("An error occurred.");
-  }
-};
-
-interface Category {
-  _id?: string;
-  name?: string;
-  categoryImage?: string | File;
-}
-
-export const createCategory = async (category: Category) => {
+// Category Creation
+export const createCategory = async (category: {
+  name: string;
+  categoryImage: File;
+}) => {
   try {
     const formData = new FormData();
-    formData.append("name", category.name as string);
-    formData.append("categoryImage", category.categoryImage as File);
-    console.log(formData);
+    formData.append("name", category.name);
+    formData.append("categoryImage", category.categoryImage);
 
-    const response = await axiosAdminInstance.post(
+    const { data } = await axiosAdminInstance.post(
       "/admin/createCategory",
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       }
     );
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Category creation failed",
-      details: error.response?.data || error.message,
-    };
+
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Category creation failed");
   }
 };
 
+// Get All Categories
 export const getAllCategories = async () => {
   try {
-    const response = await axiosAdminInstance.get("/admin/getAllCategories");
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Category creation failed",
-      details: error.response?.data || error.message,
-    };
+    const { data } = await axiosAdminInstance.get("/admin/getAllCategories");
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Failed to fetch categories");
   }
 };
 
+// Delete Category
 export const deleteCategory = async (categoryId: string) => {
   try {
-    const response = await axiosAdminInstance.patch("/admin/deleteCategory", {
+    const { data } = await axiosAdminInstance.patch("/admin/deleteCategory", {
       categoryId,
     });
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Category deletion failed",
-      details: error.response?.data || error.message,
-    };
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Category deletion failed");
   }
 };
 
-export const createProduct = async (formData) => {
+// Create Product
+export const createProduct = async (formData: FormData) => {
   try {
-    const response = await axiosAdminInstance.post(
+    const { data } = await axiosAdminInstance.post(
       "/admin/createProduct",
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       }
     );
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Product creation failed",
-      details: error.response?.data || error.message,
-    };
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Product creation failed");
   }
 };
 
+// Get Products by Category
 export const getProductByCategory = async (categoryId: string) => {
   try {
-    const response = await axiosAdminInstance.get(
+    const { data } = await axiosAdminInstance.get(
       `/admin/getProductsByCategory/${categoryId}`
     );
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Product fetching failed",
-      details: error.response?.data || error.message,
-    };
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Product fetching failed");
   }
 };
 
+// Get Product Discounts
 export const getProductDiscounts = async () => {
   try {
-    const response = await axiosAdminInstance.get(`/admin/getProductDiscounts`);
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Discount fetching failed",
-      details: error.response?.data || error.message,
-    };
+    const { data } = await axiosAdminInstance.get(`/admin/getProductDiscounts`);
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Discount fetching failed");
   }
 };
 
-export const createDiscount = async (
-  discountData: Omit<IProductDiscount, "active">
-) => {
+// Create Discount
+export const createDiscount = async (discountData: {
+  name: string;
+  discount_percentage: number;
+}) => {
   try {
-    const response = await axiosAdminInstance.post(
+    const { data } = await axiosAdminInstance.post(
       `/admin/createDiscount`,
       discountData
     );
-    return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Discount creation failed",
-      details: error.response?.data || error.message,
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Discount creation failed");
+  }
+};
+
+// Delete Product
+export const deleteProduct = async (productId: string) => {
+  try {
+    const { data } = await axiosAdminInstance.delete(
+      `/admin/deleteProduct/${productId}`
+    );
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Product deletion failed");
+  }
+};
+
+// Get Orders
+export const getOrders = async (
+  pageIndex = 1,
+  filterCondition: "today" | "month" | "year" = "today",
+  monthNumber?: number,
+  year?: number
+) => {
+  try {
+    const params = {
+      pageIndex,
+      filterCondition,
+      ...(monthNumber && { month: monthNumber }),
+      ...(year && { year }),
     };
+    const { data } = await axiosAdminInstance.get("/admin/getOrders", {
+      params,
+    });
+    return data;
+  } catch (error) {
+    throw handleAxiosError(error, "Failed to fetch orders");
   }
 };

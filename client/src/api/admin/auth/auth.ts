@@ -1,29 +1,17 @@
+import logError from "@/api/errorLogging";
+import handleAxiosError from "@/api/handleAxiosError";
 import axiosAdminInstance from "@/axios/adminAxiosIntance";
-
-// Utility function for logging errors
-const logError = (error: any) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.error("Detailed Error:", error);
-  } else {
-    console.error("An error occurred.");
-  }
-};
 
 // Check if admin exists
 export const adminExistsCheck = async (adminId: string) => {
   try {
-    const response = await axiosAdminInstance.post("/admin/adminExist", {
+    const { data } = await axiosAdminInstance.post("/admin/adminExist", {
       adminId,
     });
-    return response.data;
-  } catch (error: any) {
+    return data;
+  } catch (error) {
     logError(error);
-
-    // Provide a standardized error response
-    throw {
-      message: "Failed to check if admin exists.",
-      details: error.response?.data || error.message,
-    };
+    throw handleAxiosError(error, "Failed to check if admin exists.");
   }
 };
 
@@ -34,20 +22,15 @@ export const adminLogin = async (
   adminId: string
 ) => {
   try {
-    const response = await axiosAdminInstance.post("/admin/login", {
+    const { data } = await axiosAdminInstance.post("/admin/login", {
       email,
       password,
       adminId,
     });
-    return response.data;
-  } catch (error: any) {
+    return data;
+  } catch (error) {
     logError(error);
-
-    // Provide a standardized error response
-    throw {
-      message: "Failed to log in.",
-      details: error.response?.data || error.message,
-    };
+    throw handleAxiosError(error, "Failed to log in.");
   }
 };
 
@@ -57,88 +40,63 @@ export const adminLoginOtpVerification = async (
   otp: string
 ) => {
   try {
-    const response = await axiosAdminInstance.post(
+    const { data } = await axiosAdminInstance.post(
       "/admin/adminOtpVerification",
-      {
-        adminId,
-        otp,
-      }
+      { adminId, otp }
     );
-    return response.data;
-  } catch (error: any) {
+    return data;
+  } catch (error) {
     logError(error);
-
-    // Provide a standardized error response
-    throw {
-      message: "Failed to verify OTP.",
-      details: error.response?.data || error.message,
-    };
+    throw handleAxiosError(error, "Failed to verify OTP.");
   }
 };
 
+// Admin creation request
 export const adminCreationRequest = async (
   name: string,
   email: string,
   password: string
 ) => {
   try {
-    const response = await axiosAdminInstance.post(
+    const { data } = await axiosAdminInstance.post(
       "/admin/adminCreationRequest",
-      {
-        name,
-        email,
-        password,
-      }
+      { name, email, password }
     );
-    return response.data;
-  } catch (error: any) {
+    return data;
+  } catch (error) {
     logError(error);
-
-    // Provide a standardized error response
-    throw {
-      message: "Admin creation request failed.",
-      details: error.response?.data || error.message,
-    };
+    throw handleAxiosError(error, "Admin creation request failed.");
   }
 };
 
+// Admin creation request verification
 export const adminCreationRequestVerification = async (
   otp1: number,
   otp2: number,
   newAdminsId: string
 ) => {
   try {
-    const response = await axiosAdminInstance.post(
+    const { data } = await axiosAdminInstance.post(
       "/admin/adminCreationRequestValidation",
-      {
-        otp1,
-        otp2,
-        newAdminsId,
-      }
+      { otp1, otp2, newAdminsId }
     );
-    return response.data;
-  } catch (error: any) {
+    return data;
+  } catch (error) {
     logError(error);
-
-    // Provide a standardized error response
-    throw {
-      message: "Admin creation request verification failed.",
-      details: error.response?.data || error.message,
-    };
+    throw handleAxiosError(
+      error,
+      "Admin creation request verification failed."
+    );
   }
 };
 
+// Admin logout
 export const adminLogout = async () => {
   try {
-    const response = await axiosAdminInstance.post("/admin/adminLogout");
-    return response.data;
-  } catch (error: any) {
+    const { data } = await axiosAdminInstance.post("/admin/adminLogout");
+    return data;
+  } catch (error) {
     logError(error);
-
-    // Provide a standardized error response
-    throw {
-      message: "Admin logout failed.",
-      details: error.response?.data || error.message,
-    };
+    throw handleAxiosError(error, "Admin logout failed.");
   }
 };

@@ -1,13 +1,5 @@
+import handleAxiosError from "@/api/handleAxiosError";
 import axiosAdminInstance from "@/axios/adminAxiosIntance";
-
-// Utility function for logging errors
-const logError = (error: any) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.error("Detailed Error:", error);
-  } else {
-    console.error("An error occurred.");
-  }
-};
 
 interface Banner {
   id?: string;
@@ -21,41 +13,21 @@ export const getUiUpdates = async (): Promise<{ data: Banner[] }> => {
   try {
     const response = await axiosAdminInstance.get("/admin/getUiUpdates");
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Ui updates fetch failed",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "UI updates fetch failed.");
+    throw error;
   }
 };
-
-// export const setUiUpdates = async (): Promise<{ data: Banner[] }> => {
-//   try {
-//     const response = await axiosAdminInstance.get("/admin/uiUpdate");
-//     return response.data;
-//   } catch (error: any) {
-//     logError(error);
-//     // Provide a standardized error response
-//     throw {
-//       message: "Ui updates fetch failed",
-//       details: error.response?.data || error.message,
-//     };
-//   }
-// };
 
 export const setUiUpdates = async (
   banner: Banner
 ): Promise<{ data: Banner[] }> => {
   try {
-    // Create FormData to send both text and image
     const formData = new FormData();
     formData.append("heroText", banner.heroText);
     formData.append("subText1", banner.subText1);
     formData.append("subText2", banner.subText2);
 
-    // Check if heroImage is a File (image)
     if (banner.heroImage && banner.heroImage instanceof File) {
       formData.append("heroImage", banner.heroImage);
     }
@@ -65,19 +37,15 @@ export const setUiUpdates = async (
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
+          "Content-Type": "multipart/form-data",
         },
       }
     );
 
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Ui updates submission failed",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "UI updates submission failed.");
+    throw error;
   }
 };
 
@@ -89,12 +57,8 @@ export const uiUpdateDelete = async (
       updateId,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Ui updates delete failed",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "UI updates delete failed.");
+    throw error;
   }
 };

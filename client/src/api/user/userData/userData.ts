@@ -1,27 +1,13 @@
+import handleAxiosError from "@/api/handleAxiosError";
 import userAxiosInstance from "@/axios/userAxiosInstance";
-import IUser from "@/entities/user/IUser";
 import IUserAddress from "@/entities/user/IUserAddress";
-
-// Utility function for logging errors
-const logError = (error: any) => {
-  if (process.env.NODE_ENV !== "production") {
-    console.error("Detailed Error:", error);
-  } else {
-    console.error("An error occurred.");
-  }
-};
 
 export const getUserAddresses = async () => {
   try {
     const response = await userAxiosInstance.get("/user/getUserAddresses");
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to fetch addresses.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to fetch addresses.");
   }
 };
 
@@ -31,13 +17,8 @@ export const createUserAddress = async (data: IUserAddress) => {
       address: data,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to create address.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to create address.");
   }
 };
 
@@ -51,13 +32,8 @@ export const editUserAddress = async (
       addressId,
     });
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to create address.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to edit address.");
   }
 };
 
@@ -67,20 +43,16 @@ export const deleteUserAddress = async (addressId: string) => {
       `/user/deleteUserAddress/${addressId}`
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to delete address.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to delete address.");
   }
 };
 
-export const updateUserData = async (formData) => {
+export const updateUserData = async (formData: FormData) => {
   try {
     const response = await userAxiosInstance.put(
-      `/user/updateUserData`,formData,
+      `/user/updateUserData`,
+      formData,
       {
         headers: {
           "Content-Type": "multipart/form-data", // Set the content type to multipart/form-data
@@ -88,12 +60,7 @@ export const updateUserData = async (formData) => {
       }
     );
     return response.data;
-  } catch (error: any) {
-    logError(error);
-    // Provide a standardized error response
-    throw {
-      message: "Failed to update userData.",
-      details: error.response?.data || error.message,
-    };
+  } catch (error) {
+    handleAxiosError(error, "Failed to update user data.");
   }
 };
